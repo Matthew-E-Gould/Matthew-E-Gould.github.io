@@ -1,15 +1,38 @@
 <head>
+    <!-- Template -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="Matthew Gould - Maze Demo" />
+    <meta name="author" content="Matthew Gould" />
+    <title>Matthew Gould - Maze Demo</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
+
     <link href="../../css/styles.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body style="background-color:#000000;">
     <div class="container">
-        <p class="text-white">Press <code>F12</code> to open up js console</p>
 
-        <p class="text-white">Following commands can be run:</p>
+        <div class="row">
+            <div class="col-6 sol-sm-12">
+                <p class="text-white">Press <code>F12</code> and navigate to <code>Console</code> in the window that appeared</p>
 
-        <p class="text-white"><code>resizeCanvas(&lt;size&gt;)</code> &larr; Will resize the render of the maze</p>
-        <p class="text-white"><code>drawMaze(&lt;size&gt;)</code> &larr; Will re-render maze with new dimension</p>
+                <p class="text-white">The following commands can be run:</p>
+
+                <p class="text-white"><code>resizeCanvas(&lt;size&gt;)</code> &larr; Will resize the render of the maze</p>
+                <p class="text-white"><code>drawMaze(&lt;size&gt;)</code> &larr; Will re-render maze with new dimension</p>
+                <p class="text-white"><code>newMaze(&lt;width&gt;, &lt;height&gt;)</code> &larr; Returns an object that represenst a rendered maze which can then be used with <code>drawMaze</code></p>
+            </div>
+
+
+            <div class="col-6 sol-sm-12">
+                <p class="text-white">This is a small js application that renders a Labyrinth with a way up and down. Some dead ends have chests full of loot, make sure to collect them all! Maze is generated as image so can be printed out to provide 5 mins of quiet if you have kids 😉</p>
+            </div>
+        </div>
+
+        <a class="btn btn-block btn-outline-light" href="..">
+            Back to Demos
+        </a>
 
     </div>
 
@@ -352,21 +375,23 @@
 
         } else {
             console.error("<size> must be a number greater than 10");
+            }
+
         }
 
-    }
+        function resizeCanvas(size = 400){
 
-    function resizeCanvas(size = 400){
+            if (typeof(size) == 'number' && size > 100) {
+                var canvas = document.getElementById("floorMap");
+                canvas.style= "width:" + size.toString() + "px;height:" + size.toString() + "px;image-rendering:pixelated;";
+            } else {
+                console.error("<size> must be a number greater than 100");
+                }
 
-        if (typeof(size) == 'number' && size > 100) {
-            var canvas = document.getElementById("floorMap");
-            canvas.style="width:"+ size.toString() +"px;height:"+ size.toString() +"px;image-rendering:pixelated;";
-        } else {
-            console.error("<size> must be a number greater than 100");
-        }
-    }
+                console.log("resize complete.");
+            }
 
-    resizeCanvas();
-    var temp = drawMaze(15);
+            resizeCanvas();
+            var temp = drawMaze(15);
 
-</script>
+        </script>
