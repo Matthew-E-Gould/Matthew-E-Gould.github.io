@@ -28,14 +28,14 @@ body {
   text-align: center;
 }
 
-.notfound .notfound-404 {
+.notfound .notfound-title {
   height: 280px;
   position: relative;
   z-index: -1;
 }
 
-.notfound .notfound-404 h1 {
-  font-family: 'Montserrat', sans-serif;
+.notfound .notfound-title h1 {
+  font-family: 'Roboto', sans-serif;
   font-size: 230px;
   margin: 0px;
   font-weight: 900;
@@ -44,7 +44,7 @@ body {
   -webkit-transform: translateX(-50%);
       -ms-transform: translateX(-50%);
           transform: translateX(-50%);
-  background: url('/img/404.jpg') no-repeat;
+  background: url('../assets/img/404.png') no-repeat;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-size: cover;
@@ -53,7 +53,7 @@ body {
 
 
 .notfound h2 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
   color: #000;
   font-size: 24px;
   font-weight: 700;
@@ -62,7 +62,7 @@ body {
 }
 
 .notfound p {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
   color: #000;
   font-size: 14px;
   font-weight: 400;
@@ -70,27 +70,12 @@ body {
   margin-top: 0px;
 }
 
-.notfound a {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  text-decoration: none;
-  text-transform: uppercase;
-  background: #0046d5;
-  display: inline-block;
-  padding: 15px 30px;
-  border-radius: 40px;
-  color: #fff;
-  font-weight: 700;
-  -webkit-box-shadow: 0px 4px 15px -5px #0046d5;
-          box-shadow: 0px 4px 15px -5px #0046d5;
-}
-
 
 @media only screen and (max-width: 767px) {
-    .notfound .notfound-404 {
+    .notfound .notfound-title {
       height: 142px;
     }
-    .notfound .notfound-404 h1 {
+    .notfound .notfound-title h1 {
       font-size: 112px;
     }
 }
