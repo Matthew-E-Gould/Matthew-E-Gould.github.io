@@ -16,32 +16,51 @@
     <div class="vueApp" id="vueApp" name="vueApp">
         <br>
         <p>Just a small demo on optimising methods on finding primes.</p>
-        <a class="btn btn-block btn-outline-dark" href="..">Back to Demos</a>
+
+        <a class="btn btn-block btn-outline-dark" href="..">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Demos
+        </a>
+
         <hr>
         <br>
+
         <div class="input-group mb-3">
             <input type="number" id="numBox" value="0" class="form-control" placeholder="value" aria-label="value">
         </div>
+
         <div class="row">
-            <div class="col-6">
-                <input type="button" value="Start Factor Check" class="btn btn-block btn-outline-dark my-2" v-on:click="runOnce();">
+            <div class="col-6 pr-1">
+                <input type="button" value="Start Factor Check" class="btn btn-block btn-outline-dark mx-1 px-1 my-2" v-on:click="runOnce();">
             </div>
-            <div class="col-6">
-                <input type="button" value="Find Primes up to val" class="btn btn-block btn-outline-dark my-2" v-on:click="optiPrimes();">
+            <div class="col-6 pl-1">
+                <input type="button" value="Find Primes up to val" class="btn btn-block btn-outline-dark mx-1 px-1 my-2" v-on:click="optiPrimes();">
             </div>
         </div>
+
         <br>
-        <input type="button" value="Factor Check up to val (can take a while)" class="btn btn-block btn-warning my-2" v-on:click="runMany();">
-        <br><br>
-        <input type="button" value="Find primes indefinitely (must have F12 console open) !! WILL EVENTUALLY CRASH BROWSER TAB !!" class="btn btn-block btn-danger my-2" v-on:click="allPrimes();">
+
+        <div class="custom-control custom-switch px-5">
+            <input type="checkbox" v-model="safety" class="custom-control-input" id="customSwitch1">
+            <label class="custom-control-label" for="customSwitch1">Safety Switch</label>
+        </div>
+
+        <br>
+
+        <input type="button" :disabled="safety" value="Factor Check up to val (can take a while)" class="btn btn-block btn-warning my-2" v-on:click="runMany();">
+        <input type="button" :disabled="safety" value="Find primes indefinitely (must have F12 console open) !! WILL EVENTUALLY CRASH BROWSER TAB !!" class="btn btn-block btn-danger my-2" v-on:click="allPrimes();">
+
         <hr>
+
         <div v-if="loading">
             <div class="d-flex justify-content-center">
                 <div class="spinner-border" role="status"></div>
             </div>
             <hr>
         </div>
+
         <div id="UI"></div>
+
     </div>
 </body>
 
@@ -52,6 +71,7 @@ var primes = new Vue({
     el: ".vueApp",
     data: {
         loading: false,
+        safety: true,
     },
 
     mounted: function () {
