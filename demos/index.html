@@ -39,6 +39,18 @@
         color: #3C345C;
     }
 
+    hr {
+        display: block;
+        border: 1;
+        border-radius: 30px;
+        height:30px;
+        background-image: url('../assets/img/demoBG.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+        background-size: cover;
+    }
+
 </style>
 
 <body>
@@ -50,16 +62,16 @@
 
                 <div style="height: 5%"></div>
 
-                <a class="btn btn-block btn-outline-dark my-2" href="botGame">Bot Game</a>
-                <a class="btn btn-block btn-outline-dark my-2" href="primesDemo">Primes Demo</a>
-                <a class="btn btn-block btn-outline-dark my-2" href="mazeGenerator">Maze Generator</a>
+                <button class="btn btn-block btn-outline-dark my-2" onClick="location.href='botGame'">Bot Game</button>
+                <button class="btn btn-block btn-outline-dark my-2" onClick="location.href='primesDemo'">Primes Demo</button>
+                <button class="btn btn-block btn-outline-dark my-2" onClick="location.href='mazeGenerator'">Maze Generator</button>
 
                 <div style="height: 20%"></div>
-                <hr>
+                <hr><hr>
                 <div style="height: 5%"></div>
 
-                <a class="btn btn-block btn-outline-secondary my-2" href="https://github.com/Matthew-E-Gould?tab=repositories">GitHub Repository</a>
-                <a class="btn btn-block btn-outline-secondary my-2" href="..">Back to Home</a>
+                <a class="btn btn-block btn-outline-secondary my-2" onClick="location.href='https://github.com/Matthew-E-Gould?tab=repositories'">GitHub Repository</a>
+                <a class="btn btn-block btn-outline-secondary my-2" onClick="location.href='..'">Back to Home</a>
 
             </div>
         </div>
@@ -68,7 +80,7 @@
 
             <div style="height: 20%"></div>
 
-            <div class="row m-0 p-0" style="height: 100%">
+            <div class="row m-0 p-0">
                 <div class="col-sm-0 col-md-0 col-lg-3"></div>
 
                 <div class="col-sm-0 col-md-0 col-lg-6">
