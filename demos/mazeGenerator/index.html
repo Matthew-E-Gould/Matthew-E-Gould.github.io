@@ -374,23 +374,22 @@
 
         } else {
             console.error("<size> must be a number greater than 10");
-            }
-
         }
 
-        function resizeCanvas(size = 400){
+    }
 
-            if (typeof(size) == 'number' && size > 100) {
-                var canvas = document.getElementById("floorMap");
-                canvas.style= "width:" + size.toString() + "px;height:" + size.toString() + "px;image-rendering:pixelated;";
-            } else {
-                console.error("<size> must be a number greater than 100");
-                }
+    function resizeCanvas(size = 400){
 
-                console.log("resize complete.");
+        if (typeof(size) == 'number' && size > 100) {
+            var canvas = document.getElementById("floorMap");
+            canvas.style= "width:" + size.toString() + "px;height:" + size.toString() + "px;image-rendering:pixelated;";
+        } else {
+            console.error("<size> must be a number greater than 100");
             }
+        console.log("resize complete.");
+    };
 
-            resizeCanvas();
-            var temp = drawMaze(15);
+    resizeCanvas(); // only needed if canvas style hasnt been set up
+    var firstMaze = drawMaze(15); // firstMaze can be accessed in console
 
-        </script>
+</script>
