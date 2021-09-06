@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Template -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="Matthew Gould - Level Tracker" />
+    <meta name="author" content="Matthew Gould" />
+    <title>Matthew Gould - Rocket League Season Tracker</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
+
+    <link href="../../css/styles.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body class="container my-3">
+    <div class="vueApp" id="vueApp" name="vueApp">
+
+        <br>
+        <p>A useful little tracker that lets you work out how many levels you need to get in a game to get to a certain level by a certain date.</p>
+
+        <br>
+
+        <a class="btn btn-block btn-outline-dark" href="..">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Demos
+        </a>
+
+        <hr>
+        <br>
+
+        <div class="row">
+
+            <div class="col-6 pr-1">
+                <input type="number" id="numBox" v-model="level.start" class="form-control" placeholder="Current Level" >
+            </div>
+
+            <div class="col-6 pl-1">
+                <input type="number" id="numBox" v-model="level.end" class="form-control" placeholder="End Level" >
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="row">
+
+            <div class="col-6 pr-1">
+                <div class="row">
+                    Start date:
+                    <vuejs-datepicker v-model="date.start"></vuejs-datepicker>
+                </div>
+            </div>
+
+            <div class="col-6 pl-1">
+                <div class="row">
+                    End date:
+                    <vuejs-datepicker v-model="date.end"></vuejs-datepicker>
+                </div>
+            </div>
+            
+        </div>
+
+        <br>
+
+        <div class="input-group mb-3">
+            <input type="button" value="Calculate Levels per day!" class="btn btn-block btn-outline-dark mx-1 px-1 my-2" v-on:click="calculate();">
+        </div>
+
+        <p v-if="showOutput">{{output}}</p>
+
+    </div>
+</body>
+
+<script src="https://unpkg.com/vuejs-datepicker"></script>
+<script src="../../js/moment.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+    var template = new Vue({
+        el: ".vueApp",
+        components: {
+            vuejsDatepicker
+        },
+        data: {
+            loading: false,
+
+            level: {
+                start: 0,
+                end: 130,
+            },
+
+            date: {
+                start: null,
+                end: null,
+            },
+
+            showOutput: false,
+            output: null,
+        },
+
+        mounted: function () {
+            this.now = new Date().getTime();
+            console.log(new Date());
+            console.log(new Date().getTime());
+
+            this.start = this.end = new Date();
+
+        },
+
+        computed: {
+
+            template: function(){
+            },
+
+        },
+
+        methods: {
+
+            calculate: function () {
+                this.showOutput = false;
+
+                const MS_TO_DAYS = 1000 * 60 * 60 * 24;
+
+                let levelsToGo = this.level.end - this.level.start;
+
+                let msDiff = Math.abs(this.date.start - this.date.end);
+                let daysDiff = (msDiff + MS_TO_DAYS) / MS_TO_DAYS;
+
+                let levelsADay = levelsToGo/daysDiff;
+
+                this.output = "To get to level " + this.level.end + " by " + this.date.end + ", then you must level up " + levelsADay + " time(s) a day";
+                this.showOutput = true;
+            },
+        }
+
+    });
+</script>
