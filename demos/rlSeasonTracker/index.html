@@ -45,16 +45,16 @@
         <div class="row">
 
             <div class="col-6 pr-1">
-                <div class="row">
+                <div style="display: flex; flex-wrap: wrap;">
                     Start date:
-                    <vuejs-datepicker v-model="date.start"></vuejs-datepicker>
+                    <vuejs-datepicker v-model="date.start" class="pl-2"></vuejs-datepicker>
                 </div>
             </div>
 
             <div class="col-6 pl-1">
-                <div class="row">
+                <div style="display: flex; flex-wrap: wrap;">
                     End date:
-                    <vuejs-datepicker v-model="date.end"></vuejs-datepicker>
+                    <vuejs-datepicker v-model="date.end" class="pl-2"></vuejs-datepicker>
                 </div>
             </div>
             
@@ -98,12 +98,7 @@
         },
 
         mounted: function () {
-            this.now = new Date().getTime();
-            console.log(new Date());
-            console.log(new Date().getTime());
-
             this.start = this.end = new Date();
-
         },
 
         computed: {
