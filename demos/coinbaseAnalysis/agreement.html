@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="Matthew Gould - Agree with this innit" />
     <meta name="author" content="Matthew Gould" />
-    <title>Matthew Gould - TEMPLATE</title>
+    <title>Matthew Gould - Agreement of use</title>
     <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
 
     <link href="../../css/styles.css" rel="stylesheet" type="text/css" />
@@ -38,7 +38,7 @@
                             Matthew-E-Gould.github.io,</li>
                         <li>You agree to not just hand out this data willy nilly, frankly you shouldn't be hadning this
                             data
-                            out to this website so yeah,</li>
+                            out to this website but yeah,</li>
                     </ul>
                     <v-btn color="primary" @click="stage = 2">
                         I Agree With The List Above
@@ -49,7 +49,7 @@
                     Step 1, Log In To Coinbase & Head To 'Your Reports'
                 </v-stepper-step>
                 <v-stepper-content step="2">
-                    <p><img src="S1.jpg" height="720"></p>
+                    <p><img src="S1.jpg" width="100%"></p>
                     <v-btn color="primary" @click="stage = 3">
                         Continue
                     </v-btn>
@@ -62,7 +62,7 @@
                     Step 2, Generate A CSV Report
                 </v-stepper-step>
                 <v-stepper-content step="3">
-                    <p><img src="S2.jpg" height="720"></p>
+                    <p><img src="S2.jpg" width="100%"></p>
                     <v-btn color="primary" @click="stage = 4">
                         Continue
                     </v-btn>
@@ -77,7 +77,7 @@
                 <v-stepper-content step="4">
                     <p>For this bit all you have to do is remove your email address and the wacky numbers after it. Keep
                         the commas there as idk what will happen if they are gone...</p>
-                    <p><img src="S3.jpg" width="1280"></p>
+                    <p><img src="S3.jpg" width="100%"></p>
                     <v-btn color="primary" @click="nextpage">
                         Next Page
                     </v-btn>
@@ -106,6 +106,7 @@
         methods: {
 
             nextpage: function () {
+                window.location.href = document.URL.replace('agreement.html', 'analysis.html')
                 console.log('loading next page...')
             },
 

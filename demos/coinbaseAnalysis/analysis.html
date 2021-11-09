@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Template -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="Matthew Gould - Agree with this innit" />
+    <meta name="author" content="Matthew Gould" />
+    <title>Matthew Gould - TEMPLATE</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
+
+    <link href="../../css/styles.css" rel="stylesheet" type="text/css" />
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+
+<body class="container my-3">
+    <div id="app">
+        <v-app id="inspire">
+
+            <div v-if="uploadStage">
+                <input type="file" @change="fileChanged" accept=".csv" ref="file" />
+                <v-btn @click="fileConfirmed">Confirm File Selection</v-btn>
+            </div>
+            <div v-else>
+                <v-data-table :headers="tableHeaders" :items="tableItems"></v-data-table>
+                <apexchart type="pie" width="380" :options="buyBreakdownOptions" :series="buyBreakdownSeries">
+                </apexchart>
+            </div>
+
+        </v-app>
+    </div>
+</body>
+<!-- apex charts & vue apex charts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-apexcharts"></script>
+<!-- vue & vuetify -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+<!-- papa parse -->
+<script src='https://cdn.jsdelivr.net/npm/papaparse@5.3.1/papaparse.min.js'></script>
+<script defer>
+
+    Vue.component("apexchart", window.VueApexCharts);
+    app = new Vue({
+        el: '#app',
+        vuetify: new Vuetify(),
+        data() {
+            return {
+                currencies: ["AFA", "ALL", "DZD", "AOA", "ARS", "AMD", "AWG", "AUD", "AZN", "BSD", "BHD", "BDT", "BBD", "BYR", "BEF", "BZD", "BMD", "BTN", "BTC", "BOB", "BAM", "BWP", "BRL", "GBP", "BND", "BGN", "BIF", "KHR", "CAD", "CVE", "KYD", "XOF", "XAF", "XPF", "CLP", "CNY", "COP", "KMF", "CDF", "CRC", "HRK", "CUC", "CZK", "DKK", "DJF", "DOP", "XCD", "EGP", "ERN", "EEK", "ETB", "EUR", "FKP", "FJD", "GMD", "GEL", "DEM", "GHS", "GIP", "GRD", "GTQ", "GNF", "GYD", "HTG", "HNL", "HKD", "HUF", "ISK", "INR", "IDR", "IRR", "IQD", "ILS", "ITL", "JMD", "JPY", "JOD", "KZT", "KES", "KWD", "KGS", "LAK", "LVL", "LBP", "LSL", "LRD", "LYD", "LTL", "MOP", "MKD", "MGA", "MWK", "MYR", "MVR", "MRO", "MUR", "MXN", "MDL", "MNT", "MAD", "MZM", "MMK", "NAD", "NPR", "ANG", "TWD", "NZD", "NIO", "NGN", "KPW", "NOK", "OMR", "PKR", "PAB", "PGK", "PYG", "PEN", "PHP", "PLN", "QAR", "RON", "RUB", "RWF", "SVC", "WST", "SAR", "RSD", "SCR", "SLL", "SGD", "SKK", "SBD", "SOS", "ZAR", "KRW", "XDR", "LKR", "SHP", "SDG", "SRD", "SZL", "SEK", "CHF", "SYP", "STD", "TJS", "TZS", "THB", "TOP", "TTD", "TND", "TRY", "TMT", "UGX", "UAH", "AED", "UYU", "USD", "UZS", "VUV", "VEF", "VND", "YER", "ZMK"],
+
+                uploadStage: true,
+
+                fileObject: null,
+                headers: [],
+                data: [],
+
+                tableHeaders: [],
+                tableItems: [],
+
+                buyBreakdownOptions: {
+                    // chart: {
+                    //     width: 380,
+                    //     type: 'pie',
+                    // },
+                    labels: [],
+                    // responsive: [{
+                    //     breakpoint: 480,
+                    //     options: {
+                    //         chart: {
+                    //             width: 200
+                    //         },
+                    //         legend: {
+                    //             position: 'bottom'
+                    //         }
+                    //     }
+                    // }]
+                },
+                buyBreakdownSeries: []
+            }
+        },
+        methods: {
+            fileChanged(event) {
+                const reader = new FileReader();
+                reader.onload = this.handleFileLoad;
+                reader.readAsText(event.target.files[0]);
+            },
+            handleFileLoad(event) {
+                let fileContent = event.target.result;
+                this.fileObject = Papa.parse(fileContent);
+            },
+            fileConfirmed() {
+                this.headers = this.fileObject.data[7];
+                this.data = this.fileObject.data.splice(8, this.fileObject.data.length - 7);
+
+                console.log(this.headers);
+                console.log(this.data);
+
+                this.runOperations();
+
+                this.uploadStage = false;
+            },
+
+            runOperations() {
+                this.formatForTable()
+                this.processBuys();
+                //this.processCryptoAmounts();
+            },
+
+            formatForTable() {
+                this.tableHeaders = [];
+                this.tableItems = [];
+
+                this.headers.forEach(header => {
+                    this.tableHeaders.push({
+                        text: header,
+                        value: header,
+                        sortable: true,
+                    })
+                });
+
+                this.data.forEach(item => {
+                    let tempObj = {}
+                    for (let i = 0; i < item.length; i++) {
+                        tempObj[this.headers[i]] = item[i];
+                    }
+                    if (item.length == this.headers.length) this.tableItems.push(tempObj); // avoids creating dodgy rows in the table
+                });
+
+            },
+
+            processBuys() {
+
+                this.buysBreakdown = {};
+
+                this.buyBreakdownSeries = [];
+                this.buyBreakdownOptions.labels = [];
+
+
+                this.data.forEach(item => {
+                    if (item[1] == 'Buy') {
+                        let val = parseFloat(item[7]);
+                        let curr = item[4];
+                        if (this.buysBreakdown[curr] == undefined) {
+                            this.buysBreakdown[curr] = val
+                        }
+                        else this.buysBreakdown[curr] += val;
+                    }
+                })
+
+                this.buyBreakdownOptions.labels = Object.keys(this.buysBreakdown)
+                this.buyBreakdownSeries = Object.values(this.buysBreakdown)
+
+            }
+        },
+        watch: {},
+    })
+
+</script>
