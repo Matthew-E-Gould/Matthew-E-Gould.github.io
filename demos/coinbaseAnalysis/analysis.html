@@ -95,29 +95,61 @@
                 </v-row>
 
                 <br><br>
-                <hr><br><br>
 
-                <!-- transaction calendar -->
-                <v-toolbar flat>
-                    <v-btn fab text small color="grey darken-2" @click="calendarPrev">
-                        <v-icon small>
-                            mdi-chevron-left
-                        </v-icon>
-                    </v-btn>
-                    <v-btn fab text small color="grey darken-2" @click="calendarNext">
-                        <v-icon small>
-                            mdi-chevron-right
-                        </v-icon>
-                    </v-btn>
-                    <v-spacer></v-spacer>
-                </v-toolbar>
-                <v-calendar ref="calendar" :events="calendarData"></v-calendar>
+                <v-expansion-panels>
 
-                <br><br>
-                <hr><br><br>
+                    <!-- transaction calendar -->
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>
+                            <span>
+                                <v-icon left>
+                                    mdi-calendar-month
+                                </v-icon>
+                                Calendar
+                            </span>
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <v-toolbar flat>
+                                <v-btn fab text color="grey darken-2" @click="calendarPrev">
+                                    <v-icon>
+                                        mdi-chevron-left
+                                    </v-icon>
+                                </v-btn>
+                                <v-btn fab text color="grey darken-2" @click="calendarNext">
+                                    <v-icon>
+                                        mdi-chevron-right
+                                    </v-icon>
+                                </v-btn>
+                                <v-btn v-if="calendarType != 'month'" @click="calendarType = 'month'">
+                                    Back To Month View
+                                </v-btn>
+                                <v-spacer></v-spacer>
+                            </v-toolbar>
+                            <v-sheet height="720">
+                                <v-calendar ref="calendar" v-model="calendarModel" :events="calendarData"
+                                    @click:event="viewCalendarDay" @click:more="viewCalendarDay" @click:date="viewCalendarDay"
+                                    :type="calendarType"></v-calendar>
+                            </v-sheet>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
 
-                <!-- table of all transactions -->
-                <v-data-table :headers="tableHeaders" :items="tableItems"></v-data-table>
+                    <!-- table of all transactions -->
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>
+                            <span>
+                                <v-icon left>
+                                    mdi-database
+                                </v-icon>
+                                Table
+                            </span>
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <v-data-table :headers="tableHeaders" :items="tableItems"></v-data-table>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+
+                </v-expansion-panels>
+
             </div>
 
         </v-app>
@@ -157,6 +189,8 @@
                 data: [],
 
                 calendarData: [],
+                calendarModel: '',
+                calendarType: 'month',
 
                 tableHeaders: [],
                 tableItems: [],
@@ -317,13 +351,13 @@
                 let action = item[1];
 
                 if (action == 'Sell' || action == 'Send') { // outgoing
-                    this.totalCryptoHeld += item[3];
+                    this.totalCryptoHeld -= parseFloat( item[3] );
                 } else if (action == 'Buy' || action == 'Receive' || action == 'Rewards Income' || action == 'Coinbase Earn') { // incoming
-                    this.totalCryptoHeld = + item[3];
+                    this.totalCryptoHeld += parseFloat( item[3] );
                 } else if (action == 'Convert') {
                     let floats = item[9].match(/[+-]?\d+(\.\d+)?/g).map(function (v) { return parseFloat(v); }); // data cleanup
-                    this.totalCryptoHeld += floats[0]; // converted from
-                    this.totalCryptoHeld += floats[1]; // converted to
+                    this.totalCryptoHeld -= parseFloat( floats[0] ); // converted from
+                    this.totalCryptoHeld += parseFloat( floats[1] ); // converted to
                 }
 
                 // console.log(this.totalCryptoHeld);
@@ -354,23 +388,34 @@
 
             handleCalendarEntry(item) {
                 if (item[0]) {
-                    let date = new Date(item[0]);
-                    let end = new Date(date.getTime() + 1000);
+                    let dateClass = new Date(item[0])
+                    let date = item[0].split('T');
+                    let time = date[1].split('Z');
+
                     this.calendarData.push({
                         name: item[9],
-                        start: date,
-                        end: end,
-                        color: '#FFFFFF',
-                        times: true,
+                        start: dateClass,
+                        color: 'blue',
+                        times: false,
                         category: item[1],
                     });
+
                 }
             },
             calendarPrev() {
-                this.$refs.calendar.prev()
+                // console.log('calendarPrev()');
+                this.$refs.calendar.prev();
             },
             calendarNext() {
-                this.$refs.calendar.next()
+                // console.log('calendarNext()');
+                this.$refs.calendar.next();
+            },
+            viewCalendarDay(date) {
+
+                console.log(date)
+
+                this.focus = date
+                this.calendarType = 'day'
             },
 
             // processCryptoHold(item) {
@@ -383,24 +428,6 @@
                 this.buyBreakdownOptions.labels = Object.keys(this.buysBreakdown);
                 this.buyBreakdownSeries = Object.values(this.buysBreakdown);
             }
-
-            // processBuys() {
-            //     this.buysBreakdown = {};
-            //     this.buyBreakdownSeries = [];
-            //     this.buyBreakdownOptions.labels = [];
-            //     this.data.forEach(item => {
-            //         if (item[1] == 'Buy') {
-            //             let val = parseFloat(item[7]);
-            //             let curr = item[4];
-            //             if (this.buysBreakdown[curr] == undefined) {
-            //                 this.buysBreakdown[curr] = val
-            //             }
-            //             else this.buysBreakdown[curr] += val;
-            //         }
-            //     })
-            //     this.buyBreakdownOptions.labels = Object.keys(this.buysBreakdown);
-            //     this.buyBreakdownSeries = Object.values(this.buysBreakdown);
-            // }
 
         },
         watch: {},
