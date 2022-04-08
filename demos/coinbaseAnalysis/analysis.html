@@ -18,9 +18,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 </head>
 
-<body class="container my-3">
+<body>
     <div id="app">
-        <v-app id="inspire">
+        <v-app>
 
             <!-- Upload -->
             <div v-if="uploadStage">
@@ -31,7 +31,11 @@
             <!-- view data -->
             <div v-else>
 
+                <!-- achievement chips -->
                 <v-chip outlined v-if="diamondHands" title="Not sold"> 💎🤲 </v-chip>
+                <v-chip outlined v-for="achieve in genericAchieves" :key="achieve.text">
+                    {{ achieve.value }} {{ achieve.text }}(s)
+                </v-chip>
 
                 <br><br>
 
@@ -71,7 +75,7 @@
                             </v-card-title>
 
                             <v-card-subtitle>
-                                {{ totalCryptoHeld }}
+                                {{ totalCryptoHeld }} coins
                             </v-card-subtitle>
                         </v-card>
                     </v-col>
@@ -83,13 +87,34 @@
                                 Buy Breakdown
                             </v-card-title>
 
-                            <apexchart type="pie" width="380" :options="buyBreakdownOptions" :series="buyBreakdownSeries">
+                            <apexchart type="pie" width="380" :options="buyBreakdownOptions"
+                                :series="buyBreakdownSeries">
                             </apexchart>
                         </v-card>
                     </v-col>
                 </v-row>
 
-                <br><br><hr>
+                <br><br>
+                <hr><br><br>
+
+                <!-- transaction calendar -->
+                <v-toolbar flat>
+                    <v-btn fab text small color="grey darken-2" @click="calendarPrev">
+                        <v-icon small>
+                            mdi-chevron-left
+                        </v-icon>
+                    </v-btn>
+                    <v-btn fab text small color="grey darken-2" @click="calendarNext">
+                        <v-icon small>
+                            mdi-chevron-right
+                        </v-icon>
+                    </v-btn>
+                    <v-spacer></v-spacer>
+                </v-toolbar>
+                <v-calendar ref="calendar" :events="calendarData"></v-calendar>
+
+                <br><br>
+                <hr><br><br>
 
                 <!-- table of all transactions -->
                 <v-data-table :headers="tableHeaders" :items="tableItems"></v-data-table>
@@ -131,6 +156,8 @@
                 headers: [],
                 data: [],
 
+                calendarData: [],
+
                 tableHeaders: [],
                 tableItems: [],
 
@@ -140,6 +167,8 @@
                     responsive: []
                 },
                 buyBreakdownSeries: [],
+
+                genericAchieves: [],
             }
         },
         methods: {
@@ -156,8 +185,8 @@
                 this.headers = this.fileObject.data[7];
                 this.data = this.fileObject.data.splice(8, this.fileObject.data.length - 7);
 
-                console.log(this.headers);
-                console.log(this.data);
+                // console.log(this.headers);
+                // console.log(this.data);
 
                 this.runOperations();
 
@@ -169,37 +198,19 @@
                 this.formatHeadersForTable()
                 // this.processBuys();
                 this.processData();
-                
+
                 this.renderBuys();
                 // this.processCryptoAmounts();
                 // this.processCryptoChart();
                 // this.processTotalFee();
                 // this.processCalendar();
+
+                // debug
+                // console.log(this.genericAchieves);
             },
 
-            formatHeadersForTable() {
-                this.tableHeaders = [];
-
-                this.headers.forEach(header => {
-                    this.tableHeaders.push({
-                        text: header,
-                        value: header,
-                        sortable: true,
-                    })
-                });
-
-                // this.data.forEach(item => {
-                //     let tempObj = {}
-                //     for (let i = 0; i < item.length; i++) {
-                //         tempObj[this.headers[i]] = item[i];
-                //     }
-                //     if (item.length == this.headers.length) this.tableItems.push(tempObj); // avoids creating dodgy rows in the table
-                // });
-
-            },
-
-            reset(){
-                this.buyBreakdownOptions= {
+            reset() {
+                this.buyBreakdownOptions = {
                     chart: {
                         width: 380,
                         type: 'pie',
@@ -218,7 +229,7 @@
                         }
                     }]
                 },
-                this.buysBreakdown = {};
+                    this.buysBreakdown = {};
 
                 this.buyBreakdownSeries = [];
                 this.tableItems = [];
@@ -241,8 +252,21 @@
                     this.handleTransacted(item);
                     this.processDiamondHands(item);
                     this.processCryptoHold(item);
-
+                    this.generateGeneralAchieves(item);
+                    this.handleCalendarEntry(item);
                 })
+            },
+
+            formatHeadersForTable() {
+                this.tableHeaders = [];
+
+                this.headers.forEach(header => {
+                    this.tableHeaders.push({
+                        text: header,
+                        value: header,
+                        sortable: true,
+                    })
+                });
             },
 
             handleEntryBuy(item) {
@@ -258,17 +282,17 @@
 
             handleTransacted(item) {
                 let num = parseFloat(item[7]);
-                if(!Number.isNaN(num)){ // don't want NaNs
+                if (!Number.isNaN(num)) { // don't want NaNs
                     this.totalTransacted += num;
-                    this.totalTransactedClean = JSON.parse(JSON.stringify( this.totalTransacted )).toFixed(2);
+                    this.totalTransactedClean = JSON.parse(JSON.stringify(this.totalTransacted)).toFixed(2);
                 }
             },
 
             handleFeesPaid(item) {
                 let num = parseFloat(item[8]);
-                if(!Number.isNaN(num)){ // don't want NaNs
+                if (!Number.isNaN(num)) { // don't want NaNs
                     this.totalFee += num;
-                    this.totalFeeClean = JSON.parse(JSON.stringify( this.totalFee )).toFixed(2);
+                    this.totalFeeClean = JSON.parse(JSON.stringify(this.totalFee)).toFixed(2);
                 }
             },
 
@@ -280,47 +304,90 @@
                 if (item.length == this.headers.length) this.tableItems.push(tempObj); // avoids creating dodgy rows in the table
             },
 
-            processDiamondHands(item){
+            processDiamondHands(item) {
                 let action = item[1];
 
-                if (action == 'Sell') {  // I assume this is what it is
+                if (action == 'Sell') {
                     this.diamondHands = false;
                 }
             },
 
-            processCryptoHold(item){
+            processCryptoHold(item) {
+
                 let action = item[1];
 
-                if (action == 'Sell') {  // I assume this is what it is
-
-                } else if (action == 'Buy') {
-
+                if (action == 'Sell' || action == 'Send') { // outgoing
+                    this.totalCryptoHeld += item[3];
+                } else if (action == 'Buy' || action == 'Receive' || action == 'Rewards Income' || action == 'Coinbase Earn') { // incoming
+                    this.totalCryptoHeld = + item[3];
                 } else if (action == 'Convert') {
-
+                    let floats = item[9].match(/[+-]?\d+(\.\d+)?/g).map(function (v) { return parseFloat(v); }); // data cleanup
+                    this.totalCryptoHeld += floats[0]; // converted from
+                    this.totalCryptoHeld += floats[1]; // converted to
                 }
+
+                // console.log(this.totalCryptoHeld);
+            },
+
+            generateGeneralAchieves(item) {
+                let createEntry = true;
+                let action = item[1];
+
+                if (action == '' || action == null || action == undefined) {
+                    return;
+                }
+
+                this.genericAchieves.forEach(achieve => {
+                    if (achieve.text == action) {
+                        achieve.value += 1;
+                        createEntry = false;
+                    }
+                });
+
+                if (createEntry) {
+                    this.genericAchieves.push({
+                        value: 1,
+                        text: action,
+                    })
+                }
+            },
+
+            handleCalendarEntry(item) {
+                if (item[0]) {
+                    let date = new Date(item[0]);
+                    let end = new Date(date.getTime() + 1000);
+                    this.calendarData.push({
+                        name: item[9],
+                        start: date,
+                        end: end,
+                        color: '#FFFFFF',
+                        times: true,
+                        category: item[1],
+                    });
+                }
+            },
+            calendarPrev() {
+                this.$refs.calendar.prev()
+            },
+            calendarNext() {
+                this.$refs.calendar.next()
             },
 
             // processCryptoHold(item) {
             //     if (item[1] == 'Buy') {
-                    
             //     } else if (action == 'Convert') {
-
             //     }
             // },
 
-            renderBuys(){
+            renderBuys() {
                 this.buyBreakdownOptions.labels = Object.keys(this.buysBreakdown);
                 this.buyBreakdownSeries = Object.values(this.buysBreakdown);
             }
 
             // processBuys() {
-
             //     this.buysBreakdown = {};
-
             //     this.buyBreakdownSeries = [];
             //     this.buyBreakdownOptions.labels = [];
-
-
             //     this.data.forEach(item => {
             //         if (item[1] == 'Buy') {
             //             let val = parseFloat(item[7]);
@@ -331,11 +398,10 @@
             //             else this.buysBreakdown[curr] += val;
             //         }
             //     })
-
             //     this.buyBreakdownOptions.labels = Object.keys(this.buysBreakdown);
             //     this.buyBreakdownSeries = Object.values(this.buysBreakdown);
-
             // }
+
         },
         watch: {},
     })
