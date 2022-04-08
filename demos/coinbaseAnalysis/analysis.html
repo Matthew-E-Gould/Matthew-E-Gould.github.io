@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="Matthew Gould - Agree with this innit" />
     <meta name="author" content="Matthew Gould" />
-    <title>Matthew Gould - TEMPLATE</title>
+    <title>Matthew Gould - Coinbase Analysis</title>
     <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
 
     <link href="../../css/styles.css" rel="stylesheet" type="text/css" />
@@ -22,14 +22,77 @@
     <div id="app">
         <v-app id="inspire">
 
+            <!-- Upload -->
             <div v-if="uploadStage">
                 <input type="file" @change="fileChanged" accept=".csv" ref="file" />
                 <v-btn @click="fileConfirmed">Confirm File Selection</v-btn>
             </div>
+
+            <!-- view data -->
             <div v-else>
+
+                <v-chip outlined v-if="diamondHands" title="Not sold"> 💎🤲 </v-chip>
+
+                <br><br>
+
+                <!-- general stats -->
+                <v-row>
+                    <!-- total fee paid -->
+                    <v-col cols="4">
+                        <v-card height="100%">
+                            <v-card-title class="text-h5">
+                                Total Fees Paid
+                            </v-card-title>
+
+                            <v-card-subtitle>
+                                {{ totalFeeClean }}
+                            </v-card-subtitle>
+                        </v-card>
+                    </v-col>
+
+                    <!-- total transacted -->
+                    <v-col cols="4">
+                        <v-card height="100%">
+                            <v-card-title class="text-h5">
+                                Total Transacted
+                            </v-card-title>
+
+                            <v-card-subtitle>
+                                {{ totalTransactedClean }}
+                            </v-card-subtitle>
+                        </v-card>
+                    </v-col>
+
+                    <!-- total crypto hold -->
+                    <v-col cols="4">
+                        <v-card height="100%">
+                            <v-card-title class="text-h5">
+                                Crypto Held
+                            </v-card-title>
+
+                            <v-card-subtitle>
+                                {{ totalCryptoHeld }}
+                            </v-card-subtitle>
+                        </v-card>
+                    </v-col>
+
+                    <!-- pie chart of buy breakdown -->
+                    <v-col cols="4">
+                        <v-card height="100%">
+                            <v-card-title class="text-h5">
+                                Buy Breakdown
+                            </v-card-title>
+
+                            <apexchart type="pie" width="380" :options="buyBreakdownOptions" :series="buyBreakdownSeries">
+                            </apexchart>
+                        </v-card>
+                    </v-col>
+                </v-row>
+
+                <br><br><hr>
+
+                <!-- table of all transactions -->
                 <v-data-table :headers="tableHeaders" :items="tableItems"></v-data-table>
-                <apexchart type="pie" width="380" :options="buyBreakdownOptions" :series="buyBreakdownSeries">
-                </apexchart>
             </div>
 
         </v-app>
@@ -54,6 +117,15 @@
                 currencies: ["AFA", "ALL", "DZD", "AOA", "ARS", "AMD", "AWG", "AUD", "AZN", "BSD", "BHD", "BDT", "BBD", "BYR", "BEF", "BZD", "BMD", "BTN", "BTC", "BOB", "BAM", "BWP", "BRL", "GBP", "BND", "BGN", "BIF", "KHR", "CAD", "CVE", "KYD", "XOF", "XAF", "XPF", "CLP", "CNY", "COP", "KMF", "CDF", "CRC", "HRK", "CUC", "CZK", "DKK", "DJF", "DOP", "XCD", "EGP", "ERN", "EEK", "ETB", "EUR", "FKP", "FJD", "GMD", "GEL", "DEM", "GHS", "GIP", "GRD", "GTQ", "GNF", "GYD", "HTG", "HNL", "HKD", "HUF", "ISK", "INR", "IDR", "IRR", "IQD", "ILS", "ITL", "JMD", "JPY", "JOD", "KZT", "KES", "KWD", "KGS", "LAK", "LVL", "LBP", "LSL", "LRD", "LYD", "LTL", "MOP", "MKD", "MGA", "MWK", "MYR", "MVR", "MRO", "MUR", "MXN", "MDL", "MNT", "MAD", "MZM", "MMK", "NAD", "NPR", "ANG", "TWD", "NZD", "NIO", "NGN", "KPW", "NOK", "OMR", "PKR", "PAB", "PGK", "PYG", "PEN", "PHP", "PLN", "QAR", "RON", "RUB", "RWF", "SVC", "WST", "SAR", "RSD", "SCR", "SLL", "SGD", "SKK", "SBD", "SOS", "ZAR", "KRW", "XDR", "LKR", "SHP", "SDG", "SRD", "SZL", "SEK", "CHF", "SYP", "STD", "TJS", "TZS", "THB", "TOP", "TTD", "TND", "TRY", "TMT", "UGX", "UAH", "AED", "UYU", "USD", "UZS", "VUV", "VEF", "VND", "YER", "ZMK"],
 
                 uploadStage: true,
+                diamondHands: true,
+
+                totalFee: 0,
+                totalFeeClean: 0,
+
+                totalTransacted: 0,
+                totalTransactedClean: 0,
+
+                totalCryptoHeld: 0,
 
                 fileObject: null,
                 headers: [],
@@ -63,24 +135,11 @@
                 tableItems: [],
 
                 buyBreakdownOptions: {
-                    // chart: {
-                    //     width: 380,
-                    //     type: 'pie',
-                    // },
+                    chart: {},
                     labels: [],
-                    // responsive: [{
-                    //     breakpoint: 480,
-                    //     options: {
-                    //         chart: {
-                    //             width: 200
-                    //         },
-                    //         legend: {
-                    //             position: 'bottom'
-                    //         }
-                    //     }
-                    // }]
+                    responsive: []
                 },
-                buyBreakdownSeries: []
+                buyBreakdownSeries: [],
             }
         },
         methods: {
@@ -106,14 +165,20 @@
             },
 
             runOperations() {
-                this.formatForTable()
-                this.processBuys();
-                //this.processCryptoAmounts();
+                this.reset();
+                this.formatHeadersForTable()
+                // this.processBuys();
+                this.processData();
+                
+                this.renderBuys();
+                // this.processCryptoAmounts();
+                // this.processCryptoChart();
+                // this.processTotalFee();
+                // this.processCalendar();
             },
 
-            formatForTable() {
+            formatHeadersForTable() {
                 this.tableHeaders = [];
-                this.tableItems = [];
 
                 this.headers.forEach(header => {
                     this.tableHeaders.push({
@@ -123,39 +188,154 @@
                     })
                 });
 
-                this.data.forEach(item => {
-                    let tempObj = {}
-                    for (let i = 0; i < item.length; i++) {
-                        tempObj[this.headers[i]] = item[i];
-                    }
-                    if (item.length == this.headers.length) this.tableItems.push(tempObj); // avoids creating dodgy rows in the table
-                });
+                // this.data.forEach(item => {
+                //     let tempObj = {}
+                //     for (let i = 0; i < item.length; i++) {
+                //         tempObj[this.headers[i]] = item[i];
+                //     }
+                //     if (item.length == this.headers.length) this.tableItems.push(tempObj); // avoids creating dodgy rows in the table
+                // });
 
             },
 
-            processBuys() {
-
+            reset(){
+                this.buyBreakdownOptions= {
+                    chart: {
+                        width: 380,
+                        type: 'pie',
+                    },
+                    labels: [],
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 200
+                            },
+                            legend: {
+                                show: false,
+                                position: 'bottom',
+                            }
+                        }
+                    }]
+                },
                 this.buysBreakdown = {};
 
                 this.buyBreakdownSeries = [];
-                this.buyBreakdownOptions.labels = [];
+                this.tableItems = [];
 
+                this.totalFee = 0;
+                this.totalFeeClean = 0;
+                this.totalTransacted = 0;
+                this.totalTransactedClean = 0;
+                this.totalCryptoHeld = 0;
 
+                this.diamondHands = true;
+            },
+
+            processData() {
                 this.data.forEach(item => {
-                    if (item[1] == 'Buy') {
-                        let val = parseFloat(item[7]);
-                        let curr = item[4];
-                        if (this.buysBreakdown[curr] == undefined) {
-                            this.buysBreakdown[curr] = val
-                        }
-                        else this.buysBreakdown[curr] += val;
-                    }
-                })
 
+                    this.handleEntryBuy(item);
+                    this.handleEntryTable(item);
+                    this.handleFeesPaid(item);
+                    this.handleTransacted(item);
+                    this.processDiamondHands(item);
+                    this.processCryptoHold(item);
+
+                })
+            },
+
+            handleEntryBuy(item) {
+                if (item[1] == 'Buy') {
+                    let val = parseFloat(item[7]);
+                    let curr = item[4];
+                    if (this.buysBreakdown[curr] == undefined) {
+                        this.buysBreakdown[curr] = val;
+                    }
+                    else this.buysBreakdown[curr] += val;
+                }
+            },
+
+            handleTransacted(item) {
+                let num = parseFloat(item[7]);
+                if(!Number.isNaN(num)){ // don't want NaNs
+                    this.totalTransacted += num;
+                    this.totalTransactedClean = JSON.parse(JSON.stringify( this.totalTransacted )).toFixed(2);
+                }
+            },
+
+            handleFeesPaid(item) {
+                let num = parseFloat(item[8]);
+                if(!Number.isNaN(num)){ // don't want NaNs
+                    this.totalFee += num;
+                    this.totalFeeClean = JSON.parse(JSON.stringify( this.totalFee )).toFixed(2);
+                }
+            },
+
+            handleEntryTable(item) {
+                let tempObj = {};
+                for (let i = 0; i < item.length; i++) {
+                    tempObj[this.headers[i]] = item[i];
+                }
+                if (item.length == this.headers.length) this.tableItems.push(tempObj); // avoids creating dodgy rows in the table
+            },
+
+            processDiamondHands(item){
+                let action = item[1];
+
+                if (action == 'Sell') {  // I assume this is what it is
+                    this.diamondHands = false;
+                }
+            },
+
+            processCryptoHold(item){
+                let action = item[1];
+
+                if (action == 'Sell') {  // I assume this is what it is
+
+                } else if (action == 'Buy') {
+
+                } else if (action == 'Convert') {
+
+                }
+            },
+
+            // processCryptoHold(item) {
+            //     if (item[1] == 'Buy') {
+                    
+            //     } else if (action == 'Convert') {
+
+            //     }
+            // },
+
+            renderBuys(){
                 this.buyBreakdownOptions.labels = Object.keys(this.buysBreakdown);
                 this.buyBreakdownSeries = Object.values(this.buysBreakdown);
-
             }
+
+            // processBuys() {
+
+            //     this.buysBreakdown = {};
+
+            //     this.buyBreakdownSeries = [];
+            //     this.buyBreakdownOptions.labels = [];
+
+
+            //     this.data.forEach(item => {
+            //         if (item[1] == 'Buy') {
+            //             let val = parseFloat(item[7]);
+            //             let curr = item[4];
+            //             if (this.buysBreakdown[curr] == undefined) {
+            //                 this.buysBreakdown[curr] = val
+            //             }
+            //             else this.buysBreakdown[curr] += val;
+            //         }
+            //     })
+
+            //     this.buyBreakdownOptions.labels = Object.keys(this.buysBreakdown);
+            //     this.buyBreakdownSeries = Object.values(this.buysBreakdown);
+
+            // }
         },
         watch: {},
     })
