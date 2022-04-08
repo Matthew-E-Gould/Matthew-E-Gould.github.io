@@ -494,7 +494,7 @@
                         if(coinsToFind.length === 0) return;
                     });
 
-                    this.cryptoParam = coinsToFind.join(",");
+                    this.cryptoParam = coinsToGet.join(",");
                     this.fiatParam = Object.keys(this.buysBreakdown).join(",");
                     this.queryCoinGeko();
 
