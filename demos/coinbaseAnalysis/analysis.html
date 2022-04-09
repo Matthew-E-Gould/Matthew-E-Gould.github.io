@@ -133,6 +133,24 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
+                    <!-- table of current holdings -->
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>
+                            <span>
+                                <v-icon left>
+                                    mdi-database
+                                </v-icon>
+                                Holdings Table
+                            </span>
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <v-toolbar flat>
+                                <v-text-field v-model="holdingTableSearch" append-icon="mdi-magnify" label="Search Holdings" single-line hide-details></v-text-field>
+                            </v-toolbar>
+                            <v-data-table :headers="holdingTableHeaders" :items="holdingTableItemsClean" :search="holdingTableSearch"></v-data-table>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+
                     <!-- table of all transactions -->
                     <v-expansion-panel>
                         <v-expansion-panel-header>
@@ -140,11 +158,14 @@
                                 <v-icon left>
                                     mdi-database
                                 </v-icon>
-                                Table
+                                Trasnactions Table
                             </span>
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
-                            <v-data-table :headers="tableHeaders" :items="tableItems"></v-data-table>
+                            <v-toolbar flat>
+                                <v-text-field v-model="transactionTableSearch" append-icon="mdi-magnify" label="Search Transactions" single-line hide-details></v-text-field>
+                            </v-toolbar>
+                            <v-data-table :headers="transactionTableHeaders" :items="transactionTableItems" :search="transactionTableSearch"></v-data-table>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
@@ -174,7 +195,6 @@
         data() {
             return {
                 currencies: ["AFA", "ALL", "DZD", "AOA", "ARS", "AMD", "AWG", "AUD", "AZN", "BSD", "BHD", "BDT", "BBD", "BYR", "BEF", "BZD", "BMD", "BTN", "BTC", "BOB", "BAM", "BWP", "BRL", "GBP", "BND", "BGN", "BIF", "KHR", "CAD", "CVE", "KYD", "XOF", "XAF", "XPF", "CLP", "CNY", "COP", "KMF", "CDF", "CRC", "HRK", "CUC", "CZK", "DKK", "DJF", "DOP", "XCD", "EGP", "ERN", "EEK", "ETB", "EUR", "FKP", "FJD", "GMD", "GEL", "DEM", "GHS", "GIP", "GRD", "GTQ", "GNF", "GYD", "HTG", "HNL", "HKD", "HUF", "ISK", "INR", "IDR", "IRR", "IQD", "ILS", "ITL", "JMD", "JPY", "JOD", "KZT", "KES", "KWD", "KGS", "LAK", "LVL", "LBP", "LSL", "LRD", "LYD", "LTL", "MOP", "MKD", "MGA", "MWK", "MYR", "MVR", "MRO", "MUR", "MXN", "MDL", "MNT", "MAD", "MZM", "MMK", "NAD", "NPR", "ANG", "TWD", "NZD", "NIO", "NGN", "KPW", "NOK", "OMR", "PKR", "PAB", "PGK", "PYG", "PEN", "PHP", "PLN", "QAR", "RON", "RUB", "RWF", "SVC", "WST", "SAR", "RSD", "SCR", "SLL", "SGD", "SKK", "SBD", "SOS", "ZAR", "KRW", "XDR", "LKR", "SHP", "SDG", "SRD", "SZL", "SEK", "CHF", "SYP", "STD", "TJS", "TZS", "THB", "TOP", "TTD", "TND", "TRY", "TMT", "UGX", "UAH", "AED", "UYU", "USD", "UZS", "VUV", "VEF", "VND", "YER", "ZMK"],
-                coinGekoData: [],
 
                 uploadStage: true,
                 diamondHands: true,
@@ -195,8 +215,20 @@
                 calendarModel: '',
                 calendarType: 'month',
 
-                tableHeaders: [],
-                tableItems: [],
+                transactionTableHeaders: [],
+                transactionTableItems: [],
+                transactionTableSearch: '',
+
+                holdingTableHeaders: [
+                    {sortable: true, text: 'Crypto', value: 'crypto'},
+                    {sortable: true, text: 'Coins', value: 'coins'},
+                    {sortable: true, text: 'Buy Value (-ve values represent profit)', value: 'buy'},
+                    {sortable: true, text: 'Current Sell Value', value: 'cSale'},
+                    {sortable: true, text: '%age', value: 'percentage'},
+                ],
+                holdingTableItems: [],
+                holdingTableItemsClean: [],
+                holdingTableSearch: '',
 
                 cryptos: [],
 
@@ -210,8 +242,11 @@
 
                 genericAchieves: [],
 
+                coinGekoData: [],
+                coinsProcessed: [],
                 cryptoParam: '',
                 fiatParam: '',
+                coinGekoRes: [],
             }
         },
         mounted() {
@@ -232,6 +267,7 @@
 
         },
         methods: {
+            // CSV and processing
             fileChanged(event) {
                 const reader = new FileReader();
                 reader.onload = this.handleFileLoad;
@@ -253,22 +289,21 @@
                 this.uploadStage = false;
             },
 
+            // runs operations after the CSV is processed
             runOperations() {
                 this.reset();
-                this.formatHeadersForTable()
-                // this.processBuys();
+                this.formatHeadersForTable();
                 this.processData();
 
+                this.cleanHoldingTableData();
                 this.renderBuys();
-                // this.processCryptoAmounts();
-                // this.processCryptoChart();
-                // this.processTotalFee();
-                // this.processCalendar();
+                this.preBuildCoinGekoQuery();
 
                 // debug
                 // console.log(this.genericAchieves);
             },
 
+            // reset all data
             reset() {
                 this.buyBreakdownOptions = {
                     chart: {
@@ -292,7 +327,7 @@
                 this.buysBreakdown = {};
 
                 this.buyBreakdownSeries = [];
-                this.tableItems = [];
+                this.transactionTableItems = [];
 
                 this.totalFee = 0;
                 this.totalFeeClean = 0;
@@ -303,36 +338,26 @@
                 this.diamondHands = true;
             },
 
+            // process data in each entry from CSV
             processData() {
                 this.data.forEach(item => {
+                    if(item[0] != undefined && item[0] != ''){
+                        
+                        this.handleEntryBuy(item);
+                        this.handleEntryTable(item);
+                        this.handleFeesPaid(item);
+                        this.handleTransacted(item);
+                        this.processDiamondHands(item);
+                        this.processCryptoHold(item);
+                        this.generateGeneralAchieves(item);
+                        this.handleCalendarEntry(item);
+                        this.getCoinTypes(item);
 
-                    this.handleEntryBuy(item);
-                    this.handleEntryTable(item);
-                    this.handleFeesPaid(item);
-                    this.handleTransacted(item);
-                    this.processDiamondHands(item);
-                    this.processCryptoHold(item);
-                    this.generateGeneralAchieves(item);
-                    this.handleCalendarEntry(item);
-                    this.getCoinTypes(item);
-
+                    }
                 })
-
-                this.preBuildCoinGekoQuery();
             },
 
-            formatHeadersForTable() {
-                this.tableHeaders = [];
-
-                this.headers.forEach(header => {
-                    this.tableHeaders.push({
-                        text: header,
-                        value: header,
-                        sortable: true,
-                    })
-                });
-            },
-
+            // pie chart breakdown
             handleEntryBuy(item) {
                 if (item[1] == 'Buy') {
                     let val = parseFloat(item[7]);
@@ -343,7 +368,12 @@
                     else this.buysBreakdown[curr] += val;
                 }
             },
+            renderBuys() {
+                this.buyBreakdownOptions.labels = Object.keys(this.buysBreakdown);
+                this.buyBreakdownSeries = Object.values(this.buysBreakdown);
+            },
 
+            // calculating how much cash has been transacted
             handleTransacted(item) {
                 let num = parseFloat(item[7]);
                 if (!Number.isNaN(num)) { // don't want NaNs
@@ -352,6 +382,7 @@
                 }
             },
 
+            // calculating how much fees had been paid
             handleFeesPaid(item) {
                 let num = parseFloat(item[8]);
                 if (!Number.isNaN(num)) { // don't want NaNs
@@ -360,58 +391,103 @@
                 }
             },
 
-            handleEntryTable(item) {
-                let tempObj = {};
-                for (let i = 0; i < item.length; i++) {
-                    tempObj[this.headers[i]] = item[i];
-                }
-                if (item.length == this.headers.length) this.tableItems.push(tempObj); // avoids creating dodgy rows in the table
-            },
-
-            processDiamondHands(item) {
-                let action = item[1];
-
-                if (action == 'Sell') {
-                    this.diamondHands = false;
-                }
-            },
-
+            // process how much crypto is currently held by the user
             processCryptoHold(item) {
 
+                // console.log(item)
+
                 let action = item[1];
+                let crypto = item[2].toLowerCase();
+
+                if(this.holdingTableItems[crypto] == undefined){
+                    this.holdingTableItems[crypto] = {'crypto': crypto.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0};
+                }
+
+                let transactedCrypto = parseFloat(item[3]);
+
 
                 if (action == 'Sell' || action == 'Send') { // outgoing
-                    this.totalCryptoHeld -= parseFloat(item[3]);
+                    this.totalCryptoHeld -= transactedCrypto;
+                    this.holdingTableItems[crypto]['coins'] -= transactedCrypto;
+
+
+                    if(action == 'Sell'){
+                        this.holdingTableItems[crypto]['buy'] -= parseFloat(item[6]);
+                    }
 
                     // console.log(item[9]);
-                    // console.log(parseFloat( item[3] ));
+                    // console.log( transactedCrypto );
 
                 } else if (action == 'Buy' || action == 'Receive' || action == 'Rewards Income' || action == 'Coinbase Earn') { // incoming
-                    this.totalCryptoHeld += parseFloat(item[3]);
+                    this.totalCryptoHeld += transactedCrypto;
+                    this.holdingTableItems[crypto]['coins'] += transactedCrypto;
+
+                    if(action == 'Buy'){
+                        this.holdingTableItems[crypto]['buy'] += parseFloat(item[6]);
+
+                    }else if(action == 'Rewards Income'){
+                        this.holdingTableItems[crypto]['buy'] -= (parseFloat(item[3]) * parseFloat(item[5]));
+
+                    }else if(action == 'Coinbase Earn'){
+                        this.holdingTableItems[crypto]['buy'] -= parseFloat(item[6]);
+
+                    }
 
                     // console.log(item[9]);
-                    // console.log(parseFloat( item[3] ));
+                    // console.log( transactedCrypto );
 
                 } else if (action == 'Convert') {
-                    str = item[9].replace(/,/g, '');
-                    let floats = str.match(/[+-]?\d+(\.\d+)?/g).map(function (v) { return parseFloat(v); }); // data cleanup
+                    let cryptoFrom = '';
+                    let cryptoTo = '';
+
+                    str = item[9].replace(/,/g, ''); // remove allcases of comma
+
+                    let floats = str.match(/[+-]?\d+(\.\d+)?/g)
+                    .filter(str => {
+                        return str.indexOf('.') > -1; // only want values with a '.'
+                    })
+                    .map(str => {
+                        return parseFloat(str); // convert to float
+                    });
+
                     this.totalCryptoHeld -= parseFloat(floats[0]); // converted from
                     this.totalCryptoHeld += parseFloat(floats[1]); // converted to
 
+                    cryptoFrom = str.split(floats[0])[1].split(' ')[1].toLowerCase(); // get crypto converted from
+                    cryptoTo = str.split(floats[1])[1].split(' ')[1].toLowerCase(); // get crypto converted to
+                    
+                    // console.log(item);
+                    // console.log(floats);
+                    // console.log( str.split(floats[0])[1].split(' ') );
+                    // console.log(cryptoFrom);
+                    // console.log( str.split(floats[1])[1].split(' ') );
+                    // console.log(cryptoTo);
+
+                    // init-ing crypto to if not existing
+                    if(this.holdingTableItems[cryptoTo] == undefined){
+                        this.holdingTableItems[cryptoTo] = {'crypto': cryptoTo.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0};
+                    }
+
+                    // converted from
+                    this.holdingTableItems[cryptoFrom]['coins'] -= parseFloat(floats[0]);
+                    this.holdingTableItems[cryptoFrom]['buy'] -= parseFloat(item[6]);
+
+                    // converted to
+                    this.holdingTableItems[cryptoTo]['coins'] += parseFloat(floats[1]);
+                    this.holdingTableItems[cryptoTo]['buy'] += parseFloat(item[6]);
+
                     // console.log(item[9]);
                     // console.log(floats);
+                    // console.log(this.holdingTableItems)
                 }
 
                 // console.log(this.totalCryptoHeld);
             },
 
+            // badges & achievements on top of page
             generateGeneralAchieves(item) {
                 let createEntry = true;
                 let action = item[1];
-
-                if (action == '' || action == null || action == undefined) {
-                    return;
-                }
 
                 this.genericAchieves.forEach(achieve => {
                     if (achieve.text == action) {
@@ -427,7 +503,53 @@
                     })
                 }
             },
+            processDiamondHands(item) {
+                let action = item[1];
 
+                if (action == 'Sell') {
+                    this.diamondHands = false;
+                }
+            },
+
+            //////////////////////
+            // holding table stuff
+            cleanHoldingTableData() {
+                this.holdingTableItemsClean = [];
+
+                Object.values( this.holdingTableItems ).forEach(ogItem => {
+                    let item = JSON.parse(JSON.stringify(ogItem));
+
+                    if(item['coins'] < 0){
+                        item['coins'] = 0;
+                    }
+
+                    this.holdingTableItemsClean.push(item)
+                });
+            },
+
+            //////////////////////////
+            // transaction table stuff
+            formatHeadersForTable() {
+                this.transactionTableHeaders = [];
+
+                this.headers.forEach(header => {
+                    this.transactionTableHeaders.push({
+                        text: header,
+                        value: header,
+                        sortable: true,
+                    })
+                });
+            },
+            handleEntryTable(item) {
+                let tempObj = {};
+                for (let i = 0; i < item.length; i++) {
+                    tempObj[this.headers[i]] = item[i];
+                }
+                if (item.length == this.headers.length) this.transactionTableItems.push(tempObj); // avoids creating dodgy rows in the table
+            },
+
+            /////////////////
+            // calendar stuff
             handleCalendarEntry(item) {
                 if (item[0]) {
                     let dateClass = new Date(item[0])
@@ -460,6 +582,8 @@
                 this.calendarType = 'day'
             },
 
+            //////////////////
+            // live data stuff
             getCoinTypes(item) {
                 // to be used with https://www.coingecko.com/en/api/documentation
 
@@ -485,6 +609,7 @@
                         if (coinsToFind.includes( coinData.symbol )){
 
                             coinsToGet.push(coinData.id);
+                            this.coinsProcessed.push( coinData );
                             // let index = coinsToFind.findIndex(coinData.symbol);
                             // coinsToFind.splice(index, 1);
 
@@ -501,20 +626,21 @@
                 }
             },
             queryCoinGeko(self = this){
-                axios.get('https://api.coingecko.com/api/v3/simple/price', {params: {'ids': this.cryptoParam, 'vs_currencies': this.fiatParam}} )
+                axios.get('https://api.coingecko.com/api/v3/simple/price', {params: {'ids': self.cryptoParam, 'vs_currencies': self.fiatParam}} )
                     .then(res => {
-                        this.coinGekoRes = res.data;
+                        self.coinGekoRes = res.data;
+                        self.processCoinGeko();
                     })
                     .catch(err => {
-                        setTimeout(queryCoinGeko, 5000, this)
+                        setTimeout(queryCoinGeko, 5000, self)
                     })
                 ;
             },
+            processCoinGeko(){
+                if(this.coinGekoRes){
 
-            renderBuys() {
-                this.buyBreakdownOptions.labels = Object.keys(this.buysBreakdown);
-                this.buyBreakdownSeries = Object.values(this.buysBreakdown);
-            }
+                }
+            },
 
         },
         watch: {},
