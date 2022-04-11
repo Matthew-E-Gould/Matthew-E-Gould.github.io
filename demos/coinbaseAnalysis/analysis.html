@@ -229,6 +229,7 @@
                 holdingTableItems: [],
                 holdingTableItemsClean: [],
                 holdingTableSearch: '',
+                holdingTableKey: 'HoldKey-0',
 
                 cryptos: [],
 
@@ -669,11 +670,15 @@
                 console.log('processCoinGeko()');
 
                 this.holdingTableItems.forEach(item => {
-                    let coinConverstions = this.self.coinGekoRes[item.obj.id]
+                    console.log('====================================)');
+                    console.log(item);
+                    let coinConverstions = this.coinGekoRes[item.obj.id];
+                    console.log(coinConverstions)
                     item.conversions = coinConverstions;
                     item.cSale = item.coins * item.conversions[ Object.keys(coinConverstions)[0] ]; // ultra MVP solution
                     item.percentage = 'inf';
                     if(item.buy != 0) item.percentage = (item.cSale / item.buy) * 100;
+                    console.log(item);
                 });
 
                 this.cleanHoldingTableData();
