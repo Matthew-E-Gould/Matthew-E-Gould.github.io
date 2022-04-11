@@ -245,13 +245,15 @@
                 coinGekoData: [],
                 coinsProcessed: [],
                 cryptoParam: '',
+                cryptoParamArr: [],
                 fiatParam: '',
+                fiatParamArr: [],
                 coinGekoRes: [],
             }
         },
         mounted() {
 
-            console.log('mounted V0.6');
+            console.log('mounted V0.7');
             // consider making this a req to https://api.coingecko.com/api/v3/coins/list instead
             axios.get('coinGekoCoinIds.json', {
                 // headers: {
@@ -400,7 +402,8 @@
                 let crypto = item[2].toLowerCase();
 
                 if(this.holdingTableItems[crypto] == undefined){
-                    this.holdingTableItems[crypto] = {'crypto': crypto.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0};
+                    this.holdingTableItems[crypto] = {'crypto': crypto.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0, 'obj': {}};
+                    this.buildCoinGekoQuery('crypto', crypto);
                 }
 
                 let transactedCrypto = parseFloat(item[3]);
@@ -465,7 +468,8 @@
 
                     // init-ing crypto to if not existing
                     if(this.holdingTableItems[cryptoTo] == undefined){
-                        this.holdingTableItems[cryptoTo] = {'crypto': cryptoTo.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0};
+                        this.holdingTableItems[cryptoTo] = {'crypto': cryptoTo.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0, 'obj': {}};
+                        this.buildCoinGekoQuery('crypto', crypto);
                     }
 
                     // converted from
@@ -610,6 +614,7 @@
 
                             coinsToGet.push(coinData.id);
                             this.coinsProcessed.push( coinData );
+                            this.holdingTableItems[coinData.symbol].obj = coinData;
                             // let index = coinsToFind.findIndex(coinData.symbol);
                             // coinsToFind.splice(index, 1);
 
@@ -623,6 +628,26 @@
                     this.fiatParam = Object.keys(this.buysBreakdown).join(",");
                     this.queryCoinGeko();
 
+                }
+            },
+            buildCoinGekoQuery(type, name){ // may not use
+                let response = '';
+                switch(type){
+                    // handling type crypto
+                    case 'crypto':
+                        response = this.coinGekoData.find((coin) => coin.symbol == type);
+                        if(response) this.cryptoParamArr.push(response.id);
+                    break;
+                    // handling type fiat
+                    case 'fiat':
+                        this.fiatParamArr.push(type);
+                        this.fiatParam = this.fiatParamArr.join(',');
+                        response = type;
+                    break;
+                    // error
+                    default:
+                        console.error(`ERROR buildCoinGekoQuery(): was passed type ${type}`);
+                    break;
                 }
             },
             queryCoinGeko(self = this){
