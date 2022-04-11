@@ -147,7 +147,7 @@
                             <v-toolbar flat>
                                 <v-text-field v-model="holdingTableSearch" append-icon="mdi-magnify" label="Search Holdings" single-line hide-details></v-text-field>
                             </v-toolbar>
-                            <v-data-table :headers="holdingTableHeaders" :items="holdingTableItemsClean" :search="holdingTableSearch"></v-data-table>
+                            <v-data-table :headers="holdingTableHeaders" :items="holdingTableItemsClean" :search="holdingTableSearch" :key="holdingTableKey"></v-data-table>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
@@ -253,7 +253,7 @@
         },
         mounted() {
 
-            console.log('mounted V0.8');
+            console.log('mounted V0.8.1');
             // consider making this a req to https://api.coingecko.com/api/v3/coins/list instead
             axios.get('coinGekoCoinIds.json', {
                 // headers: {
@@ -602,6 +602,8 @@
                 // console.log(this.cryptos)
             },
             preBuildCoinGekoQuery(){
+                console.log('preBuildCoinGekoQuery()');
+
                 let coinsToGet = [];
                 let coinsToFind = JSON.parse(JSON.stringify( this.cryptos ));
                 let cryptoParam = "";
@@ -651,6 +653,8 @@
                 }
             },
             queryCoinGeko(self = this){
+                console.log('queryCoinGeko()');
+
                 axios.get('https://api.coingecko.com/api/v3/simple/price', {params: {'ids': self.cryptoParam, 'vs_currencies': self.fiatParam}} )
                     .then(res => {
                         self.coinGekoRes = res.data;
@@ -662,6 +666,8 @@
                 ;
             },
             processCoinGeko(){
+                console.log('processCoinGeko()');
+
                 this.holdingTableItems.forEach(item => {
                     let coinConverstions = this.self.coinGekoRes[item.obj.id]
                     item.conversions = coinConverstions;
