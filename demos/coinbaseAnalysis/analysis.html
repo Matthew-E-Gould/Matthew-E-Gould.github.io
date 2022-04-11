@@ -530,6 +530,11 @@
 
                     this.holdingTableItemsClean.push(item)
                 });
+
+                // update key
+                let split = this.holdingTableKey.split('-');
+                split[1] = parseInt(split[1])+1;
+                this.holdingTableKey = split.join('-');
             },
 
             //////////////////////////
