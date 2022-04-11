@@ -158,7 +158,7 @@
                                 <v-icon left>
                                     mdi-database
                                 </v-icon>
-                                Trasnactions Table
+                                Transactions Table
                             </span>
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
@@ -223,7 +223,7 @@
                     {sortable: true, text: 'Crypto', value: 'crypto'},
                     {sortable: true, text: 'Coins', value: 'coins'},
                     {sortable: true, text: 'Buy Value (-ve values represent profit)', value: 'buy'},
-                    {sortable: true, text: 'Current Sell Value', value: 'cSale'},
+                    {sortable: true, text: 'Current Cash Out Value', value: 'cSale'},
                     {sortable: true, text: '%age', value: 'percentage'},
                 ],
                 holdingTableItems: [],
@@ -253,7 +253,7 @@
         },
         mounted() {
 
-            console.log('mounted V0.7');
+            console.log('mounted V0.8');
             // consider making this a req to https://api.coingecko.com/api/v3/coins/list instead
             axios.get('coinGekoCoinIds.json', {
                 // headers: {
@@ -402,7 +402,7 @@
                 let crypto = item[2].toLowerCase();
 
                 if(this.holdingTableItems[crypto] == undefined){
-                    this.holdingTableItems[crypto] = {'crypto': crypto.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0, 'obj': {}};
+                    this.holdingTableItems[crypto] = {'crypto': crypto.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0, 'obj': {}, 'conversions':{}};
                     this.buildCoinGekoQuery('crypto', crypto);
                 }
 
@@ -468,7 +468,7 @@
 
                     // init-ing crypto to if not existing
                     if(this.holdingTableItems[cryptoTo] == undefined){
-                        this.holdingTableItems[cryptoTo] = {'crypto': cryptoTo.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0, 'obj': {}};
+                        this.holdingTableItems[cryptoTo] = {'crypto': cryptoTo.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0, 'obj': {}, 'conversions':{}};
                         this.buildCoinGekoQuery('crypto', crypto);
                     }
 
@@ -662,9 +662,15 @@
                 ;
             },
             processCoinGeko(){
-                if(this.coinGekoRes){
+                this.holdingTableItems.forEach(item => {
+                    let coinConverstions = this.self.coinGekoRes[item.obj.id]
+                    item.conversions = coinConverstions;
+                    item.cSale = item.coins * item.conversions[ Object.keys(coinConverstions)[0] ]; // ultra MVP solution
+                    item.percentage = 'inf';
+                    if(item.buy != 0) item.percentage = (item.cSale / item.buy) * 100;
+                });
 
-                }
+                this.cleanHoldingTableData();
             },
 
         },
