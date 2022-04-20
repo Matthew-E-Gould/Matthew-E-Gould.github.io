@@ -19,11 +19,73 @@
     <div id="app">
         <v-app class="dark-bg content">
 
+            <v-navigation-drawer expand-on-hover app update:mini-variant="testInput">
+
+                <!-- Logo -->
+                <v-list>
+                    <v-list-item>
+                        <v-list-item-icon>
+                            <!-- <v-img src=""></v-img> -->
+                        </v-list-item-icon>
+                        <v-list-item-title>
+                            <!-- <v-img src=""></v-img> -->
+                        </v-list-item-title>
+                </v-list>
+
+                <!-- split -->
+                <v-divider></v-divider> 
+
+                <v-list nav dense>
+
+                    <!-- Upload CSV -->
+                    <v-list-item link>
+                        <v-list-item-icon>
+                            <v-icon>mdi-cloud-upload</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Import CSV</v-list-item-title>
+                    </v-list-item>
+
+                    <!-- General Stats -->
+                    <v-list-item link>
+                        <v-list-item-icon>
+                            <v-icon>mdi-chart-line</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>General Stats</v-list-item-title>
+                    </v-list-item>
+
+                    <!-- Holdings -->
+                    <v-list-item link>
+                        <v-list-item-icon>
+                            <v-icon>mdi-hand-coin</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Your Holdings</v-list-item-title>
+                    </v-list-item>
+
+                    <!-- Calendar -->
+                    <v-list-item link>
+                        <v-list-item-icon>
+                            <v-icon>mdi-calendar-multiselect</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Transaction Calendar</v-list-item-title>
+                    </v-list-item>
+
+                    <!-- Transactions -->
+                    <v-list-item link>
+                        <v-list-item-icon>
+                            <v-icon>mdi-bank-transfer</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Transactions Table</v-list-item-title>
+                    </v-list-item>
+
+                </v-list>
+            </v-navigation-drawer>
+
             <!-- Upload -->
             <v-container v-if="uploadStage" fill-height class="prominent">
                 <!-- <input type="file" @change="fileChanged" accept=".csv" ref="file" /> -->
                 <v-container fluid>
-                    <v-file-input dark type="file" @change="fileChanged" accept=".csv" ref="file" v-model="fileInput" label="Select Coinbase .CSV file" truncate-length="45"></v-file-input>
+                    <v-file-input dark type="file" @change="fileChanged" accept=".csv" ref="file" v-model="fileInput"
+                        label="Select Coinbase .CSV file" truncate-length="45"></v-file-input>
                     <v-btn block @click="fileConfirmed">Confirm File Selection</v-btn>
                 </v-container>
             </v-container>
@@ -145,10 +207,12 @@
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <v-toolbar flat>
-                                <v-text-field v-model="holdingTableSearch" append-icon="mdi-magnify" label="Search Holdings" single-line hide-details></v-text-field>
+                                <v-text-field v-model="holdingTableSearch" append-icon="mdi-magnify"
+                                    label="Search Holdings" single-line hide-details></v-text-field>
                                 <v-combobox outlined label="Select Fiat Currency"></v-combobox>
                             </v-toolbar>
-                            <v-data-table :headers="holdingTableHeaders" :items="holdingTableItemsClean" :search="holdingTableSearch" :key="holdingTableKey">
+                            <v-data-table :headers="holdingTableHeaders" :items="holdingTableItemsClean"
+                                :search="holdingTableSearch" :key="holdingTableKey">
 
                                 <template v-slot:item.buy="{ item }">
                                     <span style="color: green;" v-if="parseFloat(item.buy) <= 0">{{ item.buy }}</span>
@@ -156,7 +220,8 @@
                                 </template>
 
                                 <template v-slot:item.percentage="{ item }">
-                                    <span style="color: green;" v-if="parseInt(item.percentage) >= 100">{{ item.percentage }}%</span>
+                                    <span style="color: green;" v-if="parseInt(item.percentage) >= 100">{{
+                                        item.percentage }}%</span>
                                     <span style="color: red;" v-else>{{ item.percentage }}%</span>
                                 </template>
 
@@ -176,9 +241,11 @@
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <v-toolbar flat>
-                                <v-text-field v-model="transactionTableSearch" append-icon="mdi-magnify" label="Search Transactions" single-line hide-details></v-text-field>
+                                <v-text-field v-model="transactionTableSearch" append-icon="mdi-magnify"
+                                    label="Search Transactions" single-line hide-details></v-text-field>
                             </v-toolbar>
-                            <v-data-table :headers="transactionTableHeaders" :items="transactionTableItems" :search="transactionTableSearch"></v-data-table>
+                            <v-data-table :headers="transactionTableHeaders" :items="transactionTableItems"
+                                :search="transactionTableSearch"></v-data-table>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
@@ -207,6 +274,8 @@
         vuetify: new Vuetify(),
         data() {
             return {
+
+                testInput: false,
 
                 uploadStage: true,
 
@@ -237,11 +306,11 @@
                 transactionTableSearch: '',
 
                 holdingTableHeaders: [
-                    {sortable: true, text: 'Crypto', value: 'crypto'},
-                    {sortable: true, text: 'Coins', value: 'coins'},
-                    {sortable: true, text: 'Buy Value (-ve values represent profit)', value: 'buy'},
-                    {sortable: true, text: 'Current Cash Out Value', value: 'cSale'},
-                    {sortable: true, text: '%age', value: 'percentage'},
+                    { sortable: true, text: 'Crypto', value: 'crypto' },
+                    { sortable: true, text: 'Coins', value: 'coins' },
+                    { sortable: true, text: 'Buy Value (-ve values represent profit)', value: 'buy' },
+                    { sortable: true, text: 'Current Cash Out Value', value: 'cSale' },
+                    { sortable: true, text: '%age', value: 'percentage' },
                 ],
                 holdingTableItems: [],
                 holdingTableItemsClean: [],
@@ -280,32 +349,32 @@
                 //     'authorization': 'kekwWhatAuth',
                 // }
             })
-            .then(res => {
-                this.coinGekoData = res.data;
-            })
-            .catch(err =>{
-
-                // fallback, may want to make it only work locally
-                axios.get('https://api.coingecko.com/api/v3/coins/list')
                 .then(res => {
-                    this.coinGekoData = res.data
-                });
+                    this.coinGekoData = res.data;
+                })
+                .catch(err => {
 
-            });
+                    // fallback, may want to make it only work locally
+                    axios.get('https://api.coingecko.com/api/v3/coins/list')
+                        .then(res => {
+                            this.coinGekoData = res.data
+                        });
+
+                });
 
         },
         methods: {
             // CSV and processing
             fileChanged(file) {
 
-                if(file){
+                if (file) {
                     const reader = new FileReader();
                     reader.readAsText(this.fileInput);
                     reader.onload = () => {
                         let content = reader.result;
                         // console.log('content')
                         // console.log(content)
-                        
+
                         this.fileObject = Papa.parse(content);
                         // console.log('this.fileObject');
                         // console.log(this.fileObject);
@@ -385,8 +454,8 @@
             // process data in each entry from CSV
             processData() {
                 this.data.forEach(item => {
-                    if(item[0] != undefined && item[0] != ''){
-                        
+                    if (item[0] != undefined && item[0] != '') {
+
                         this.handleEntryBuy(item);
                         this.handleEntryTable(item);
                         this.handleFeesPaid(item);
@@ -443,8 +512,8 @@
                 let action = item[1];
                 let crypto = item[2].toLowerCase();
 
-                if(this.holdingTableItems[crypto] == undefined){
-                    this.holdingTableItems[crypto] = {'crypto': crypto.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0, 'obj': {}, 'conversions':{}};
+                if (this.holdingTableItems[crypto] == undefined) {
+                    this.holdingTableItems[crypto] = { 'crypto': crypto.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0, 'obj': {}, 'conversions': {} };
                     this.buildCoinGekoQuery('crypto', crypto);
                 }
 
@@ -456,7 +525,7 @@
                     this.holdingTableItems[crypto]['coins'] -= transactedCrypto;
 
 
-                    if(action == 'Sell'){
+                    if (action == 'Sell') {
                         this.holdingTableItems[crypto]['buy'] -= parseFloat(item[6]);
                     }
 
@@ -467,13 +536,13 @@
                     this.totalCryptoHeld += transactedCrypto;
                     this.holdingTableItems[crypto]['coins'] += transactedCrypto;
 
-                    if(action == 'Buy'){
+                    if (action == 'Buy') {
                         this.holdingTableItems[crypto]['buy'] += parseFloat(item[6]);
 
-                    }else if(action == 'Rewards Income'){
+                    } else if (action == 'Rewards Income') {
                         this.holdingTableItems[crypto]['buy'] -= (parseFloat(item[3]) * parseFloat(item[5]));
 
-                    }else if(action == 'Coinbase Earn'){
+                    } else if (action == 'Coinbase Earn') {
                         this.holdingTableItems[crypto]['buy'] -= parseFloat(item[6]);
 
                     }
@@ -488,19 +557,19 @@
                     str = item[9].replace(/,/g, ''); // remove allcases of comma
 
                     let floats = str.match(/[+-]?\d+(\.\d+)?/g)
-                    .filter(str => {
-                        return str.indexOf('.') > -1; // only want values with a '.'
-                    })
-                    .map(str => {
-                        return parseFloat(str); // convert to float
-                    });
+                        .filter(str => {
+                            return str.indexOf('.') > -1; // only want values with a '.'
+                        })
+                        .map(str => {
+                            return parseFloat(str); // convert to float
+                        });
 
                     this.totalCryptoHeld -= parseFloat(floats[0]); // converted from
                     this.totalCryptoHeld += parseFloat(floats[1]); // converted to
 
                     cryptoFrom = str.split(floats[0])[1].split(' ')[1].toLowerCase(); // get crypto converted from
                     cryptoTo = str.split(floats[1])[1].split(' ')[1].toLowerCase(); // get crypto converted to
-                    
+
                     // console.log(item);
                     // console.log(floats);
                     // console.log( str.split(floats[0])[1].split(' ') );
@@ -509,8 +578,8 @@
                     // console.log(cryptoTo);
 
                     // init-ing crypto to if not existing
-                    if(this.holdingTableItems[cryptoTo] == undefined){
-                        this.holdingTableItems[cryptoTo] = {'crypto': cryptoTo.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0, 'obj': {}, 'conversions':{}};
+                    if (this.holdingTableItems[cryptoTo] == undefined) {
+                        this.holdingTableItems[cryptoTo] = { 'crypto': cryptoTo.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0, 'obj': {}, 'conversions': {} };
                         this.buildCoinGekoQuery('crypto', crypto);
                     }
 
@@ -563,22 +632,22 @@
                 // console.log('cleanHoldingTableData()')
                 this.holdingTableItemsClean = [];
 
-                Object.values( this.holdingTableItems ).forEach(ogItem => {
+                Object.values(this.holdingTableItems).forEach(ogItem => {
                     let item = JSON.parse(JSON.stringify(ogItem));
 
-                    if(item['coins'] <= 0){
+                    if (item['coins'] <= 0) {
                         item['coins'] = 0;
                         item['cSale'] = '-';
                         item['percentage'] = '-';
                     } else {
 
-                        if(item['cSale']){
+                        if (item['cSale']) {
                             item['cSale'] = item['cSale'].toFixed(2);
                         } else {
                             item['cSale'] = '-';
                         }
 
-                        if(item['percentage']){
+                        if (item['percentage']) {
                             item['percentage'] = item['percentage'].toFixed(2);
                         } else {
                             item['percentage'] = '-';
@@ -586,7 +655,7 @@
 
                     }
 
-                    if(item['buy']){
+                    if (item['buy']) {
                         item['buy'] = item['buy'].toFixed(2);
                     }
 
@@ -595,7 +664,7 @@
 
                 // update key
                 let split = this.holdingTableKey.split('-');
-                split[1] = parseInt(split[1])+1;
+                split[1] = parseInt(split[1]) + 1;
                 this.holdingTableKey = split.join('-');
             },
 
@@ -659,31 +728,31 @@
             getCoinTypes(item) {
                 // to be used with https://www.coingecko.com/en/api/documentation
 
-                if(item[2]){
+                if (item[2]) {
                     // adding unique cryptos
                     let coin = item[2].toLowerCase();
-                    if (!(this.cryptos.includes( coin ))) {
-                        this.cryptos.push( coin );
+                    if (!(this.cryptos.includes(coin))) {
+                        this.cryptos.push(coin);
                     }
                 }
 
                 // console.log(this.cryptos)
             },
-            preBuildCoinGekoQuery(){
+            preBuildCoinGekoQuery() {
                 console.log('preBuildCoinGekoQuery()');
 
                 let coinsToGet = [];
-                let coinsToFind = JSON.parse(JSON.stringify( this.cryptos ));
+                let coinsToFind = JSON.parse(JSON.stringify(this.cryptos));
                 let cryptoParam = "";
                 let fiatParam = "";
 
-                if(this.coinGekoData.length != 0){
+                if (this.coinGekoData.length != 0) {
 
-                    this.coinGekoData.forEach( coinData => {
-                        if (coinsToFind.includes( coinData.symbol )){
+                    this.coinGekoData.forEach(coinData => {
+                        if (coinsToFind.includes(coinData.symbol)) {
 
                             coinsToGet.push(coinData.id);
-                            this.coinsProcessed.push( coinData );
+                            this.coinsProcessed.push(coinData);
                             this.holdingTableItems[coinData.symbol].obj = coinData;
                             // let index = coinsToFind.findIndex(coinData.symbol);
                             // coinsToFind.splice(index, 1);
@@ -691,7 +760,7 @@
                         }
 
                         // quick escape
-                        if(coinsToFind.length === 0) return;
+                        if (coinsToFind.length === 0) return;
                     });
 
                     this.cryptoParam = coinsToGet.join(",");
@@ -700,46 +769,46 @@
 
                 }
             },
-            buildCoinGekoQuery(type, name){ // may not use
+            buildCoinGekoQuery(type, name) { // may not use
                 let response = '';
-                switch(type){
+                switch (type) {
                     // handling type crypto
                     case 'crypto':
                         response = this.coinGekoData.find((coin) => coin.symbol == type);
-                        if(response) this.cryptoParamArr.push(response.id);
-                    break;
+                        if (response) this.cryptoParamArr.push(response.id);
+                        break;
                     // handling type fiat
                     case 'fiat':
                         this.fiatParamArr.push(type);
                         this.fiatParam = this.fiatParamArr.join(',');
                         response = type;
-                    break;
+                        break;
                     // error
                     default:
                         console.error(`ERROR buildCoinGekoQuery(): was passed type ${type}`);
-                    break;
+                        break;
                 }
             },
-            queryCoinGeko(self = this){
+            queryCoinGeko(self = this) {
                 console.log('queryCoinGeko()');
 
-                axios.get('https://api.coingecko.com/api/v3/simple/price', {params: {'ids': self.cryptoParam, 'vs_currencies': self.fiatParam}} )
+                axios.get('https://api.coingecko.com/api/v3/simple/price', { params: { 'ids': self.cryptoParam, 'vs_currencies': self.fiatParam } })
                     .then(res => {
                         console.log(res.data);
                         self.coinGekoRes = res.data;
                         self.processCoinGeko();
                     })
                     .catch(err => {
-                        if( err.response && err.response.status && String(err.response.status)[0] == '4' ){
+                        if (err.response && err.response.status && String(err.response.status)[0] == '4') {
                             console.error('Got a 4XX code');
                             setTimeout(queryCoinGeko, 5000, self);
                         } else {
                             console.log(err);
                         }
                     })
-                ;
+                    ;
             },
-            processCoinGeko(){
+            processCoinGeko() {
                 console.log('processCoinGeko()');
                 console.log('this.holdingTableItems');
                 console.log(this.holdingTableItems);
@@ -751,14 +820,14 @@
                     console.log('====================================');
                     console.log(item);
                     let coinConverstions = this.coinGekoRes[item.obj.id];
-                    if(coinConverstions){
+                    if (coinConverstions) {
                         console.log(coinConverstions)
                         item.conversions = coinConverstions;
-                        item.cSale = item.coins * item.conversions[ Object.keys(coinConverstions)[0] ]; // ultra MVP solution
+                        item.cSale = item.coins * item.conversions[Object.keys(coinConverstions)[0]]; // ultra MVP solution
                         item.percentage = 'inf';
-                        if(item.buy != 0) item.percentage = (item.cSale / item.buy) * 100;
+                        if (item.buy != 0) item.percentage = (item.cSale / item.buy) * 100;
                         console.log(item);
-                        this.holdingTableItems[ item.crypto.toLowerCase() ] = item;
+                        this.holdingTableItems[item.crypto.toLowerCase()] = item;
                     }
                 });
 
@@ -766,20 +835,26 @@
             },
 
         },
-        watch: {},
+        watch: {
+            testInput(v){
+                console.log('testInput Watch');
+                console.log(v);
+            }
+        },
     })
 
 </script>
 
 <style>
-.dark-bg{
-    background-color: #343D46 !important;
-}
-.beige-bg{
-    background-color: #7D003E !important;
-}
+    .dark-bg {
+        background-color: #343D46 !important;
+    }
 
-.prominent {
-    height: 65% !important;
-}
+    .beige-bg {
+        background-color: #7D003E !important;
+    }
+
+    .prominent {
+        height: 65% !important;
+    }
 </style>
