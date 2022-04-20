@@ -17,20 +17,23 @@
 
 <body>
     <div id="app">
-        <v-app>
+        <v-app class="dark-bg content">
 
             <!-- Upload -->
-            <div v-if="uploadStage">
-                <input type="file" @change="fileChanged" accept=".csv" ref="file" />
-                <v-btn @click="fileConfirmed">Confirm File Selection</v-btn>
-            </div>
+            <v-container v-if="uploadStage" fill-height class="prominent">
+                <!-- <input type="file" @change="fileChanged" accept=".csv" ref="file" /> -->
+                <v-container fluid>
+                    <v-file-input dark type="file" @change="fileChanged" accept=".csv" ref="file" v-model="fileInput" label="Select Coinbase .CSV file" truncate-length="45"></v-file-input>
+                    <v-btn block @click="fileConfirmed">Confirm File Selection</v-btn>
+                </v-container>
+            </v-container>
 
             <!-- view data -->
-            <div v-else>
+            <v-container v-else>
 
                 <!-- achievement chips -->
-                <v-chip outlined v-if="diamondHands" title="Not sold"> 💎🤲 </v-chip>
-                <v-chip outlined v-for="achieve in genericAchieves" :key="achieve.text">
+                <v-chip outlined v-if="diamondHands" title="Not sold" color="primary"> 💎🤲 </v-chip>
+                <v-chip outlined v-for="achieve in genericAchieves" :key="achieve.text" color="white">
                     {{ achieve.value }} {{ achieve.text }}(s)
                 </v-chip>
 
@@ -40,7 +43,7 @@
                 <v-row>
                     <!-- total fee paid -->
                     <v-col cols="4">
-                        <v-card height="100%">
+                        <v-card dark class="beige-bg" height="100%">
                             <v-card-title class="text-h5">
                                 Total Fees Paid
                             </v-card-title>
@@ -53,7 +56,7 @@
 
                     <!-- total transacted -->
                     <v-col cols="4">
-                        <v-card height="100%">
+                        <v-card dark class="beige-bg" height="100%">
                             <v-card-title class="text-h5">
                                 Total Transacted
                             </v-card-title>
@@ -66,7 +69,7 @@
 
                     <!-- total crypto hold -->
                     <v-col cols="4">
-                        <v-card height="100%">
+                        <v-card dark class="beige-bg" height="100%">
                             <v-card-title class="text-h5">
                                 Crypto Held
                             </v-card-title>
@@ -181,7 +184,7 @@
 
                 </v-expansion-panels>
 
-            </div>
+            </v-container>
 
         </v-app>
     </div>
@@ -204,9 +207,17 @@
         vuetify: new Vuetify(),
         data() {
             return {
-                currencies: ["AFA", "ALL", "DZD", "AOA", "ARS", "AMD", "AWG", "AUD", "AZN", "BSD", "BHD", "BDT", "BBD", "BYR", "BEF", "BZD", "BMD", "BTN", "BTC", "BOB", "BAM", "BWP", "BRL", "GBP", "BND", "BGN", "BIF", "KHR", "CAD", "CVE", "KYD", "XOF", "XAF", "XPF", "CLP", "CNY", "COP", "KMF", "CDF", "CRC", "HRK", "CUC", "CZK", "DKK", "DJF", "DOP", "XCD", "EGP", "ERN", "EEK", "ETB", "EUR", "FKP", "FJD", "GMD", "GEL", "DEM", "GHS", "GIP", "GRD", "GTQ", "GNF", "GYD", "HTG", "HNL", "HKD", "HUF", "ISK", "INR", "IDR", "IRR", "IQD", "ILS", "ITL", "JMD", "JPY", "JOD", "KZT", "KES", "KWD", "KGS", "LAK", "LVL", "LBP", "LSL", "LRD", "LYD", "LTL", "MOP", "MKD", "MGA", "MWK", "MYR", "MVR", "MRO", "MUR", "MXN", "MDL", "MNT", "MAD", "MZM", "MMK", "NAD", "NPR", "ANG", "TWD", "NZD", "NIO", "NGN", "KPW", "NOK", "OMR", "PKR", "PAB", "PGK", "PYG", "PEN", "PHP", "PLN", "QAR", "RON", "RUB", "RWF", "SVC", "WST", "SAR", "RSD", "SCR", "SLL", "SGD", "SKK", "SBD", "SOS", "ZAR", "KRW", "XDR", "LKR", "SHP", "SDG", "SRD", "SZL", "SEK", "CHF", "SYP", "STD", "TJS", "TZS", "THB", "TOP", "TTD", "TND", "TRY", "TMT", "UGX", "UAH", "AED", "UYU", "USD", "UZS", "VUV", "VEF", "VND", "YER", "ZMK"],
 
                 uploadStage: true,
+
+                fileInput: null,
+                fileObject: null,
+
+                headers: [],
+                data: [],
+
+                currencies: ["AFA", "ALL", "DZD", "AOA", "ARS", "AMD", "AWG", "AUD", "AZN", "BSD", "BHD", "BDT", "BBD", "BYR", "BEF", "BZD", "BMD", "BTN", "BTC", "BOB", "BAM", "BWP", "BRL", "GBP", "BND", "BGN", "BIF", "KHR", "CAD", "CVE", "KYD", "XOF", "XAF", "XPF", "CLP", "CNY", "COP", "KMF", "CDF", "CRC", "HRK", "CUC", "CZK", "DKK", "DJF", "DOP", "XCD", "EGP", "ERN", "EEK", "ETB", "EUR", "FKP", "FJD", "GMD", "GEL", "DEM", "GHS", "GIP", "GRD", "GTQ", "GNF", "GYD", "HTG", "HNL", "HKD", "HUF", "ISK", "INR", "IDR", "IRR", "IQD", "ILS", "ITL", "JMD", "JPY", "JOD", "KZT", "KES", "KWD", "KGS", "LAK", "LVL", "LBP", "LSL", "LRD", "LYD", "LTL", "MOP", "MKD", "MGA", "MWK", "MYR", "MVR", "MRO", "MUR", "MXN", "MDL", "MNT", "MAD", "MZM", "MMK", "NAD", "NPR", "ANG", "TWD", "NZD", "NIO", "NGN", "KPW", "NOK", "OMR", "PKR", "PAB", "PGK", "PYG", "PEN", "PHP", "PLN", "QAR", "RON", "RUB", "RWF", "SVC", "WST", "SAR", "RSD", "SCR", "SLL", "SGD", "SKK", "SBD", "SOS", "ZAR", "KRW", "XDR", "LKR", "SHP", "SDG", "SRD", "SZL", "SEK", "CHF", "SYP", "STD", "TJS", "TZS", "THB", "TOP", "TTD", "TND", "TRY", "TMT", "UGX", "UAH", "AED", "UYU", "USD", "UZS", "VUV", "VEF", "VND", "YER", "ZMK"],
+
                 diamondHands: true,
 
                 totalFee: 0,
@@ -216,10 +227,6 @@
                 totalTransactedClean: 0,
 
                 totalCryptoHeld: 0,
-
-                fileObject: null,
-                headers: [],
-                data: [],
 
                 calendarData: [],
                 calendarModel: '',
@@ -289,16 +296,32 @@
         },
         methods: {
             // CSV and processing
-            fileChanged(event) {
-                const reader = new FileReader();
-                reader.onload = this.handleFileLoad;
-                reader.readAsText(event.target.files[0]);
+            fileChanged(file) {
+
+                if(file){
+                    const reader = new FileReader();
+                    reader.readAsText(this.fileInput);
+                    reader.onload = () => {
+                        let content = reader.result;
+                        // console.log('content')
+                        // console.log(content)
+                        
+                        this.fileObject = Papa.parse(content);
+                        // console.log('this.fileObject');
+                        // console.log(this.fileObject);
+                    }
+                } else {
+                    this.fileInput = null;
+                    this.fileObject = null;
+                }
+
             },
             handleFileLoad(event) {
                 let fileContent = event.target.result;
                 this.fileObject = Papa.parse(fileContent);
             },
             fileConfirmed() {
+
                 this.headers = this.fileObject.data[7];
                 this.data = this.fileObject.data.splice(8, this.fileObject.data.length - 7);
 
@@ -747,3 +770,16 @@
     })
 
 </script>
+
+<style>
+.dark-bg{
+    background-color: #343D46 !important;
+}
+.beige-bg{
+    background-color: #7D003E !important;
+}
+
+.prominent {
+    height: 65% !important;
+}
+</style>
