@@ -146,8 +146,21 @@
                         <v-expansion-panel-content>
                             <v-toolbar flat>
                                 <v-text-field v-model="holdingTableSearch" append-icon="mdi-magnify" label="Search Holdings" single-line hide-details></v-text-field>
+                                <v-combobox outlined label="Select Fiat Currency"></v-combobox>
                             </v-toolbar>
-                            <v-data-table :headers="holdingTableHeaders" :items="holdingTableItemsClean" :search="holdingTableSearch" :key="holdingTableKey"></v-data-table>
+                            <v-data-table :headers="holdingTableHeaders" :items="holdingTableItemsClean" :search="holdingTableSearch" :key="holdingTableKey">
+
+                                <template v-slot:item.buy="{ item }">
+                                    <span style="color: green;" v-if="parseFloat(item.buy) <= 0">{{ item.buy }}</span>
+                                    <span v-else>{{ item.buy }}</span>
+                                </template>
+
+                                <template v-slot:item.percentage="{ item }">
+                                    <span style="color: green;" v-if="parseInt(item.percentage) >= 100">{{ item.percentage }}%</span>
+                                    <span style="color: red;" v-else>{{ item.percentage }}%</span>
+                                </template>
+
+                            </v-data-table>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
 
@@ -257,8 +270,8 @@
             }
         },
         mounted() {
+            console.log('mounted V0.8.3');
 
-            console.log('mounted V0.8.2');
             // consider making this a req to https://api.coingecko.com/api/v3/coins/list instead
             axios.get('coinGekoCoinIds.json', {
                 // headers: {
@@ -267,10 +280,18 @@
                 //     'authorization': 'kekwWhatAuth',
                 // }
             })
+            .then(res => {
+                this.coinGekoData = res.data;
+            })
+            .catch(err =>{
+
+                // fallback, may want to make it only work locally
+                axios.get('https://api.coingecko.com/api/v3/coins/list')
                 .then(res => {
-                    this.coinGekoData = res.data;
-                })
-            ;
+                    this.coinGekoData = res.data
+                });
+
+            });
 
         },
         methods: {
@@ -539,13 +560,34 @@
             //////////////////////
             // holding table stuff
             cleanHoldingTableData() {
+                // console.log('cleanHoldingTableData()')
                 this.holdingTableItemsClean = [];
 
                 Object.values( this.holdingTableItems ).forEach(ogItem => {
                     let item = JSON.parse(JSON.stringify(ogItem));
 
-                    if(item['coins'] < 0){
+                    if(item['coins'] <= 0){
                         item['coins'] = 0;
+                        item['cSale'] = '-';
+                        item['percentage'] = '-';
+                    } else {
+
+                        if(item['cSale']){
+                            item['cSale'] = item['cSale'].toFixed(2);
+                        } else {
+                            item['cSale'] = '-';
+                        }
+
+                        if(item['percentage']){
+                            item['percentage'] = item['percentage'].toFixed(2);
+                        } else {
+                            item['percentage'] = '-';
+                        }
+
+                    }
+
+                    if(item['buy']){
+                        item['buy'] = item['buy'].toFixed(2);
                     }
 
                     this.holdingTableItemsClean.push(item)
@@ -683,11 +725,17 @@
 
                 axios.get('https://api.coingecko.com/api/v3/simple/price', {params: {'ids': self.cryptoParam, 'vs_currencies': self.fiatParam}} )
                     .then(res => {
+                        console.log(res.data);
                         self.coinGekoRes = res.data;
                         self.processCoinGeko();
                     })
                     .catch(err => {
-                        setTimeout(queryCoinGeko, 5000, self)
+                        if( err.response && err.response.status && String(err.response.status)[0] == '4' ){
+                            console.error('Got a 4XX code');
+                            setTimeout(queryCoinGeko, 5000, self);
+                        } else {
+                            console.log(err);
+                        }
                     })
                 ;
             },
@@ -703,13 +751,15 @@
                     console.log('====================================');
                     console.log(item);
                     let coinConverstions = this.coinGekoRes[item.obj.id];
-                    console.log(coinConverstions)
-                    item.conversions = coinConverstions;
-                    item.cSale = item.coins * item.conversions[ Object.keys(coinConverstions)[0] ]; // ultra MVP solution
-                    item.percentage = 'inf';
-                    if(item.buy != 0) item.percentage = (item.cSale / item.buy) * 100;
-                    console.log(item);
-                    this.holdingTableItems[ item.crypto.toLowerCase() ] = item;
+                    if(coinConverstions){
+                        console.log(coinConverstions)
+                        item.conversions = coinConverstions;
+                        item.cSale = item.coins * item.conversions[ Object.keys(coinConverstions)[0] ]; // ultra MVP solution
+                        item.percentage = 'inf';
+                        if(item.buy != 0) item.percentage = (item.cSale / item.buy) * 100;
+                        console.log(item);
+                        this.holdingTableItems[ item.crypto.toLowerCase() ] = item;
+                    }
                 });
 
                 this.cleanHoldingTableData();
