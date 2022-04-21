@@ -76,6 +76,18 @@
                     <v-list-item-title>Transactions Table</v-list-item-title>
                 </v-list-item>
 
+                
+                <!-- split -->
+                <v-divider></v-divider> 
+
+                <!-- Reset -->
+                <v-list-item link @click="reset">
+                    <v-list-item-icon>
+                        <v-icon color="red">mdi-trash-can-outline</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title>Reset Data</v-list-item-title>
+                </v-list-item>
+
             </v-list>
         </v-navigation-drawer>
 
@@ -173,10 +185,14 @@
         <!-- Holdings -->
         <v-container v-if="currentTab == 'holdings'">
 
+            <v-alert dense border="left" type="warning">
+                <strong>Note:</strong> data may not be accurate as some information is pulled from the notes and relies on data provided from the CSV file and APIs
+            </v-alert>
+
             <v-toolbar flat>
                 <v-text-field v-model="holdingTableSearch" append-icon="mdi-magnify" label="Search Holdings" single-line hide-details></v-text-field>
                 <div class="mx-2"></div>
-                <v-combobox label="Select Fiat Currency" class="v-toolbared-combobox"></v-combobox>
+                <v-combobox label="Select Fiat Currency" class="v-toolbared-combobox" v-if="false"></v-combobox>
             </v-toolbar>
             <br>
             <v-data-table :headers="holdingTableHeaders" :items="holdingTableItemsClean"
@@ -240,6 +256,7 @@
 
     </v-app>
 </body>
+
 <!-- apex charts & vue apex charts -->
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-apexcharts"></script>
@@ -250,6 +267,9 @@
 <script src='https://cdn.jsdelivr.net/npm/papaparse@5.3.1/papaparse.min.js'></script>
 <!-- axios -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!-- sweet alert -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+
 <script defer>
 
     Vue.component("apexchart", window.VueApexCharts);
@@ -335,6 +355,7 @@
         
         methods: {
 
+            // Setup and utils
             doMount(){
                 this.reset();
 
@@ -360,77 +381,6 @@
                     })
                 ;
             },
-
-            // UX
-            setTab(tab){
-                this.currentTab = tab;
-
-                switch(tab){
-                    case 'import':
-
-                    break;
-
-                    case 'gStats':
-
-                    break;
-
-                    case 'holdings':
-
-                    break;
-
-                    case 'calendar':
-
-                    break;
-
-                    case 'transactions':
-
-                    break;
-                }
-            },
-
-            // CSV and processing
-            fileChanged(file) {
-
-                if (file) {
-                    const reader = new FileReader();
-                    reader.readAsText(this.fileInput);
-                    reader.onload = () => {
-
-                        let content = reader.result;
-                        this.fileObject = Papa.parse(content);
-                    }
-                } else {
-                    this.fileInput = null;
-                    this.fileObject = null;
-                }
-
-            },
-            handleFileLoad(event) {
-                let fileContent = event.target.result;
-                this.fileObject = Papa.parse(fileContent);
-            },
-            fileConfirmed() {
-
-                this.headers = this.fileObject.data[7];
-                this.data = this.fileObject.data.splice(8, this.fileObject.data.length - 7);
-
-                this.runOperations();
-
-                this.intialStage = false;
-                this.setTab('gStats')
-            },
-
-            // runs operations after the CSV is processed
-            runOperations() {
-                this.formatHeadersForTable();
-                this.processData();
-
-                this.cleanHoldingTableData();
-                this.renderBuys();
-                this.preBuildCoinGekoQuery();
-            },
-
-            // reset all data
             reset() {
                 this.buyBreakdownOptions = {
                     chart: {
@@ -500,6 +450,77 @@
                 this.fiatParam = '';
                 this.fiatParamArr = [];
                 this.coinGekoRes = [];
+            },
+
+            // UX
+            setTab(tab){
+                this.currentTab = tab;
+
+                switch(tab){
+                    case 'import':
+
+                    break;
+
+                    case 'gStats':
+
+                    break;
+
+                    case 'holdings':
+
+                    break;
+
+                    case 'calendar':
+
+                    break;
+
+                    case 'transactions':
+
+                    break;
+                }
+            },
+
+            // CSV and processing
+            fileChanged(file) {
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.readAsText(this.fileInput);
+                    reader.onload = () => {
+
+                        let content = reader.result;
+                        this.fileObject = Papa.parse(content);
+                    }
+                } else {
+                    this.fileInput = null;
+                    this.fileObject = null;
+                }
+
+            },
+            handleFileLoad(event) {
+                let fileContent = event.target.result;
+                this.fileObject = Papa.parse(fileContent);
+            },
+            fileConfirmed() {
+
+                this.headers = this.fileObject.data[7];
+                this.data = this.fileObject.data.splice(8, this.fileObject.data.length - 7);
+
+                this.runOperations();
+
+                this.intialStage = false;
+                this.setTab('gStats')
+            },
+
+            // runs operations after the CSV is processed
+            runOperations() {
+                this.formatHeadersForTable();
+                this.processData();
+
+                this.cleanHoldingTableData();
+                this.renderBuys();
+                this.preBuildCoinGekoQuery();
+
+                this.fileInput = null;
             },
 
             // process data in each entry from CSV
