@@ -83,9 +83,23 @@
         <v-container v-if="currentTab == 'import'" fill-height class="prominent">
             <!-- <input type="file" @change="fileChanged" accept=".csv" ref="file" /> -->
             <v-container fluid>
+
+                <!-- import select dropdown -->
+                <v-overflow-btn filled :items="importDropdown" v-model="selectedImport" background-color="white" placeholder="Select a file origin"></v-overflow-btn>
+
+                <!-- file input -->
                 <v-file-input dark type="file" @change="fileChanged" accept=".csv" ref="file" v-model="fileInput"
-                    label="Select Coinbase .CSV file" truncate-length="45"></v-file-input>
-                <v-btn block @click="fileConfirmed">Confirm File Selection</v-btn>
+                    label="Select .CSV file" truncate-length="45" :disabled="selectedImport < 1">
+                </v-file-input>
+                
+                <!-- start button -->
+                <v-btn block @click="fileConfirmed" :disabled="fileInput == null">Confirm File Selection</v-btn>
+
+                <br><br><br><br><br>
+
+                <!-- reset button -->
+                <v-btn block @click="doMount" v-if="intialStage == false" color="warning">Reset Data</v-btn>
+
             </v-container>
         </v-container>
 
@@ -93,9 +107,9 @@
         <v-container v-if="currentTab == 'gStats'">
 
             <!-- achievement chips -->
-            <v-chip outlined v-if="diamondHands" title="Not sold" color="primary"> 💎🤲 </v-chip>
-            <v-chip outlined v-for="achieve in genericAchieves" :key="achieve.text" color="white">
-                {{ achieve.value }} {{ achieve.text }}(s)
+            <v-chip outlined v-if="diamondHands" title="Not sold" color="primary" class="mx-1"> 💎🤲 </v-chip>
+            <v-chip outlined v-for="achieve in genericAchieves" :key="achieve.text" color="white" class="mx-1">
+                {{ achieve.value }} {{ achieve.text }} <span v-if="achieve.value > 1">s</span>
             </v-chip>
 
             <br><br>
@@ -245,6 +259,11 @@
         data() {
             return {
 
+                importDropdown: [
+                    {text: 'Coinbase', value: 1},
+                    {text: 'Want to import a different dataset? Contact me!', value: -1},
+                ],
+                selectedImport: 0,
                 drawerMinimised: true,
                 currentTab: 'import',
                 intialStage: true,
@@ -311,30 +330,37 @@
         
         mounted() {
             console.log('mounted V0.9');
-
-            // consider making this a req to https://api.coingecko.com/api/v3/coins/list instead
-            axios.get('coinGekoCoinIds.json', {
-                // headers: {
-                //     'sec-fetch-site': 'cross-site',
-                //     'sec-fetch-mode': 'cors',
-                //     'authorization': 'kekwWhatAuth',
-                // }
-            })
-                .then(res => {
-                    this.coinGekoData = res.data;
-                })
-                .catch(err => {
-
-                    // fallback, may want to make it only work locally
-                    axios.get('https://api.coingecko.com/api/v3/coins/list')
-                        .then(res => {
-                            this.coinGekoData = res.data
-                        });
-
-                });
+            this.doMount();
         },
         
         methods: {
+
+            doMount(){
+                this.reset();
+
+                // consider making this a req to https://api.coingecko.com/api/v3/coins/list instead
+                axios.get('coinGekoCoinIds.json', {
+                    // headers: {
+                    //     'sec-fetch-site': 'cross-site',
+                    //     'sec-fetch-mode': 'cors',
+                    //     'authorization': 'kekwWhatAuth',
+                    // }
+                })
+                    .then(res => {
+                        this.coinGekoData = res.data;
+                    })
+                    .catch(err => {
+
+                        // fallback, may want to make it only work locally
+                        axios.get('https://api.coingecko.com/api/v3/coins/list')
+                            .then(res => {
+                                this.coinGekoData = res.data
+                            });
+
+                    })
+                ;
+            },
+
             // UX
             setTab(tab){
                 this.currentTab = tab;
@@ -396,7 +422,6 @@
 
             // runs operations after the CSV is processed
             runOperations() {
-                this.reset();
                 this.formatHeadersForTable();
                 this.processData();
 
@@ -426,18 +451,55 @@
                         }
                     }]
                 };
-                this.buysBreakdown = {};
 
-                this.buyBreakdownSeries = [];
-                this.transactionTableItems = [];
+                this.selectedImport = 0;
+                this.drawerMinimised = true;
+                this.currentTab = 'import';
+                this.intialStage = true;
+
+                this.fileInput = null;
+                this.fileObject = null;
+
+                this.headers = [];
+                this.data = [];
+
+                this.diamondHands = true;
 
                 this.totalFee = 0;
                 this.totalFeeClean = 0;
+
                 this.totalTransacted = 0;
                 this.totalTransactedClean = 0;
+
                 this.totalCryptoHeld = 0;
 
-                this.diamondHands = true;
+                this.calendarData = [];
+                this.calendarModel = '';
+                this.calendarType = 'month';
+
+                this.transactionTableHeaders = [];
+                this.transactionTableItems = [];
+                this.transactionTableSearch = '';
+
+                this.holdingTableItems = [];
+                this.holdingTableItemsClean = [];
+                this.holdingTableSearch = '';
+                this.holdingTableKey = 'HoldKey-0';
+
+                this.cryptos = [];
+
+                this.buyBreakdownSeries = [];
+                this.buysBreakdown = {};
+
+                this.genericAchieves = [];
+
+                this.coinGekoData = [];
+                this.coinsProcessed = [];
+                this.cryptoParam = '';
+                this.cryptoParamArr = [];
+                this.fiatParam = '';
+                this.fiatParamArr = [];
+                this.coinGekoRes = [];
             },
 
             // process data in each entry from CSV
@@ -638,15 +700,15 @@
             //////////////////////////
             // transaction table stuff
             formatHeadersForTable() {
-                this.transactionTableHeaders = [];
-
-                this.headers.forEach(header => {
-                    this.transactionTableHeaders.push({
-                        text: header,
-                        value: header,
-                        sortable: true,
-                    })
-                });
+                if (this.transactionTableHeaders.length == 0){
+                    this.headers.forEach(header => {
+                        this.transactionTableHeaders.push({
+                            text: header,
+                            value: header,
+                            sortable: true,
+                        });
+                    });
+                }
             },
             handleEntryTable(item) {
                 let tempObj = {};
@@ -790,7 +852,14 @@
 
         },
         watch: {
+            selectedImport(v){
+                console.log(v);
 
+                if(v === -1){
+                    this.selectedImport = 0;
+                    window.open("https://matthew-e-gould.github.io#contact", "_blank");
+                }
+            },
         },
     })
 
@@ -809,6 +878,9 @@
     .moss-bg {
         background-color: #3E7D00 !important;
     }
+    .white-bg {
+        background-color: white !important;
+    }
 
     .prominent {
         height: 65% !important;
@@ -819,5 +891,9 @@
     }
     .v-toolbared-combobox {
         height: 33px;
+    }
+
+    * {
+        overflow: hidden;
     }
 </style>
