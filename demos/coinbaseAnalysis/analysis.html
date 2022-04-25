@@ -8,17 +8,17 @@
     <title>Matthew Gould - Coinbase Analysis</title>
     <link rel="icon" type="image/x-icon" href="../../assets/img/favicon.ico" />
 
-    <link href="../../css/styles.css" rel="stylesheet" type="text/css" />
+    <!-- <link href="../../css/styles.css" rel="stylesheet" type="text/css" /> -->
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <link href="crypt.css" rel="stylesheet">
 </head>
 
 <body>
-    <v-app  id="app" class="dark-bg content">
+    <v-app  id="app" class="content">
 
-        <!-- nav bar -->
+        <!-- left bar -->
         <v-navigation-drawer expand-on-hover app :mini-variant.sync="drawerMinimised" v-if="intialStage == false">
 
             <!-- Logo -->
@@ -35,72 +35,106 @@
             <v-divider></v-divider> 
 
             <v-list nav dense>
+                <v-list-item-group v-model="activeNavTab">
 
-                <!-- Upload CSV -->
-                <v-list-item link @click="setTab('import')">
-                    <v-list-item-icon>
-                        <v-icon>mdi-cloud-upload</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Import CSV</v-list-item-title>
-                </v-list-item>
+                    <!-- Upload CSV -->
+                    <v-list-item link @click="setTab('import')" color="#56D9FE">
+                        <v-list-item-icon>
+                            <v-icon>mdi-cloud-upload</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Import CSV</v-list-item-title>
+                    </v-list-item>
 
-                <!-- General Stats -->
-                <v-list-item link @click="setTab('gStats')">
-                    <v-list-item-icon>
-                        <v-icon>mdi-chart-line</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>General Stats</v-list-item-title>
-                </v-list-item>
+                    <!-- General Stats -->
+                    <v-list-item link @click="setTab('gStats')">
+                        <v-list-item-icon>
+                            <v-icon>mdi-chart-line</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>General Stats</v-list-item-title>
+                    </v-list-item>
 
-                <!-- Holdings -->
-                <v-list-item link @click="setTab('holdings')">
-                    <v-list-item-icon>
-                        <v-icon>mdi-hand-coin</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Your Holdings</v-list-item-title>
-                </v-list-item>
+                    <!-- Holdings -->
+                    <v-list-item link @click="setTab('holdings')">
+                        <v-list-item-icon>
+                            <v-icon>mdi-hand-coin</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Your Holdings</v-list-item-title>
+                    </v-list-item>
 
-                <!-- Calendar -->
-                <v-list-item link @click="setTab('calendar')">
-                    <v-list-item-icon>
-                        <v-icon>mdi-calendar-multiselect</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Transaction Calendar</v-list-item-title>
-                </v-list-item>
+                    <!-- Calendar -->
+                    <v-list-item link @click="setTab('calendar')">
+                        <v-list-item-icon>
+                            <v-icon>mdi-calendar-multiselect</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Transaction Calendar</v-list-item-title>
+                    </v-list-item>
 
-                <!-- Transactions -->
-                <v-list-item link @click="setTab('transactions')">
-                    <v-list-item-icon>
-                        <v-icon>mdi-bank-transfer</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Transactions Table</v-list-item-title>
-                </v-list-item>
+                    <!-- Transactions -->
+                    <v-list-item link @click="setTab('transactions')">
+                        <v-list-item-icon>
+                            <v-icon>mdi-bank-transfer</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Transactions Table</v-list-item-title>
+                    </v-list-item>
 
-                
-                <!-- split -->
-                <v-divider></v-divider> 
+                    
+                    <!-- split -->
+                    <v-divider></v-divider> 
 
-                <!-- Reset -->
-                <v-list-item link @click="reset">
-                    <v-list-item-icon>
-                        <v-icon color="red">mdi-trash-can-outline</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>Reset Data</v-list-item-title>
-                </v-list-item>
+                    <!-- Reset -->
+                    <v-list-item link @click="reset">
+                        <v-list-item-icon>
+                            <v-icon color="red">mdi-trash-can-outline</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Reset Data</v-list-item-title>
+                    </v-list-item>
 
+                </v-list-item-group>
             </v-list>
         </v-navigation-drawer>
 
+        <!-- top bar -->
+        <v-toolbar dense app id="top-nav">
+
+            <v-toolbar-title>
+                <v-img v-if="intialStage" src="logo.png" height="56" width="168"></v-img>
+            </v-toolbar-title>
+
+            <v-spacer></v-spacer>
+
+            <v-menu offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon v-bind="attrs" v-on="on">
+                        <v-icon>
+                            mdi-cog
+                        </v-icon>
+                    </v-btn>
+                </template>
+                <v-list>
+                    <v-list-item @click="switchTheme()">
+                        <v-list-item-title>Switch Theme</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-list-item-title>About App</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="aboutDev()">
+                        <v-list-item-title>About Dev</v-list-item-title>
+                    </v-list-item>
+                </v-list>
+            </v-menu>
+
+        </v-toolbar>
+
         <!-- Upload -->
-        <v-container v-if="currentTab == 'import'" fill-height class="prominent">
+        <v-container v-if="currentTab == 'import'" fill-height>
             <!-- <input type="file" @change="fileChanged" accept=".csv" ref="file" /> -->
-            <v-container fluid>
+            <v-container fluid class="prominent">
 
                 <!-- import select dropdown -->
-                <v-overflow-btn filled :items="importDropdown" v-model="selectedImport" background-color="white" placeholder="Select a file origin"></v-overflow-btn>
+                <v-overflow-btn filled :items="importDropdown" v-model="selectedImport" placeholder="Select a file origin"></v-overflow-btn>
 
                 <!-- file input -->
-                <v-file-input dark type="file" @change="fileChanged" accept=".csv" ref="file" v-model="fileInput"
+                <v-file-input type="file" @change="fileChanged" accept=".csv" ref="file" v-model="fileInput"
                     label="Select .CSV file" truncate-length="45" :disabled="selectedImport < 1">
                 </v-file-input>
                 
@@ -113,6 +147,7 @@
                 <v-btn block @click="doMount" v-if="intialStage == false" color="warning">Reset Data</v-btn>
 
             </v-container>
+
         </v-container>
 
         <!-- General Stats -->
@@ -129,7 +164,7 @@
             <v-row>
                 <!-- total fee paid -->
                 <v-col cols="4">
-                    <v-card dark class="navy-bg" height="100%">
+                    <v-card height="100%">
                         <v-card-title class="text-h5">
                             Total Fees Paid
                         </v-card-title>
@@ -142,7 +177,7 @@
 
                 <!-- total transacted -->
                 <v-col cols="4">
-                    <v-card dark class="navy-bg" height="100%">
+                    <v-card height="100%">
                         <v-card-title class="text-h5">
                             Total Transacted
                         </v-card-title>
@@ -155,7 +190,7 @@
 
                 <!-- total crypto hold -->
                 <v-col cols="4">
-                    <v-card dark class="navy-bg" height="100%">
+                    <v-card height="100%">
                         <v-card-title class="text-h5">
                             Crypto Held
                         </v-card-title>
@@ -216,28 +251,38 @@
         </v-container>
             
         <!-- Calendar -->
-        <v-container v-if="currentTab == 'calendar'">
+        <v-container v-if="currentTab == 'calendar'" height="100%">
             <v-toolbar flat>
+
                 <v-btn fab text color="grey darken-2" @click="calendarPrev">
                     <v-icon>
                         mdi-chevron-left
                     </v-icon>
                 </v-btn>
+
+                <v-toolbar-title v-if="$refs.calendar">
+                    {{ $refs.calendar.title }}
+                </v-toolbar-title>
+
+                <v-btn v-if="calendarType != 'month'" @click="calendarType = 'month'" class="ml-2">
+                    Back To Month View
+                </v-btn>
+
+                <v-spacer></v-spacer>
+
                 <v-btn fab text color="grey darken-2" @click="calendarNext">
                     <v-icon>
                         mdi-chevron-right
                     </v-icon>
                 </v-btn>
-                <v-btn v-if="calendarType != 'month'" @click="calendarType = 'month'">
-                    Back To Month View
-                </v-btn>
-                <v-spacer></v-spacer>
+
             </v-toolbar>
             <br>
-            <v-sheet height="720">
+            <v-sheet height="100%">
                 <v-calendar ref="calendar" v-model="calendarModel" :events="calendarData"
                     @click:event="viewCalendarDay" @click:more="viewCalendarDay"
-                    @click:date="viewCalendarDay" :type="calendarType"></v-calendar>
+                    @click:date="viewCalendarDay" :type="calendarType"
+                    style="border: solid 1px #9E9E9E;" height="100%"></v-calendar>
             </v-sheet>
         </v-container>
 
@@ -286,6 +331,7 @@
                 selectedImport: 0,
                 drawerMinimised: true,
                 currentTab: 'import',
+                activeNavTab: 1,
                 intialStage: true,
 
                 fileInput: null,
@@ -405,6 +451,7 @@
                 this.selectedImport = 0;
                 this.drawerMinimised = true;
                 this.currentTab = 'import';
+                this.activeNavTab = 1;
                 this.intialStage = true;
 
                 this.fileInput = null;
@@ -477,6 +524,12 @@
 
                     break;
                 }
+            },
+            switchTheme(){
+                this.$vuetify.theme.dark = !this.$vuetify.theme.dark
+            },
+            aboutDev(){
+                window.open('https://Matthew-E-Gould.github.io', '_blank');
             },
 
             // CSV and processing
@@ -790,16 +843,20 @@
                 let cryptoParam = "";
                 let fiatParam = "";
 
+                // seeing if we have the list of coins that coin geko can get data for
                 if (this.coinGekoData.length != 0) {
 
+                    // brute force lite search array of items
                     this.coinGekoData.forEach(coinData => {
-                        if (coinsToFind.includes(coinData.symbol)) {
+                        if ( !coinData.name.includes('(Wormhole)') && coinsToFind.includes(coinData.symbol)) { // don't want wormholes
 
                             coinsToGet.push(coinData.id);
                             this.coinsProcessed.push(coinData);
                             this.holdingTableItems[coinData.symbol].obj = coinData;
-                            // let index = coinsToFind.findIndex(coinData.symbol);
-                            // coinsToFind.splice(index, 1);
+
+                            // making brute force less brutal
+                            let index = coinsToFind.indexOf(coinData.symbol);
+                            coinsToFind.splice(index, 1);
 
                         }
 
@@ -807,6 +864,7 @@
                         if (coinsToFind.length === 0) return;
                     });
 
+                    if( !coinsToGet.includes('bitcoin') ) coinsToGet.push('bitcoin'); // if no bitcoin, add it to show their equiv bitcoin ownership
                     this.cryptoParam = coinsToGet.join(",");
                     this.fiatParam = Object.keys(this.buysBreakdown).join(",");
                     this.queryCoinGeko();
@@ -872,21 +930,32 @@
             },
 
         },
+
         watch: {
             selectedImport(v){
-                console.log(v);
+                // console.log(v);
 
                 if(v === -1){
                     this.selectedImport = 0;
+                    v = 0;
                     window.open("https://matthew-e-gould.github.io#contact", "_blank");
                 }
             },
+        },
+
+        computed: {
+            appBarHeight(){
+                return document.getElementById('top-nav').style.height.replace('px', '');
+            }
         },
     })
 
 </script>
 
 <style>
+    .black-bg {
+        background-color: #131619 !important;
+    }
     .dark-bg {
         background-color: #343D46 !important;
     }
