@@ -213,6 +213,20 @@
                         </apexchart>
                     </v-card>
                 </v-col>
+
+                <!-- Representative value held -->
+                <v-col cols="4" v-if="showHolds">
+                    <v-card height="100%">
+                        <v-card-title class="text-h5">
+                            Representative Value Held
+                        </v-card-title>
+
+                        <apexchart type="pie" width="380" :options="holdBreakdownOptions"
+                            :series="holdBreakdownSeries">
+                        </apexchart>
+                    </v-card>
+                </v-col>
+
             </v-row>
 
         </v-container>
@@ -382,6 +396,14 @@
                 buyBreakdownSeries: [],
                 buysBreakdown: {},
 
+                holdBreakdownOptions: {
+                    chart: {},
+                    labels: [],
+                    responsive: []
+                },
+                holdBreakdownSeries: [],
+                showHolds: false,
+
                 genericAchieves: [],
 
                 coinGekoData: [],
@@ -428,6 +450,7 @@
                 ;
             },
             reset() {
+
                 this.buyBreakdownOptions = {
                     chart: {
                         width: 380,
@@ -447,6 +470,12 @@
                         }
                     }]
                 };
+                this.buyBreakdownSeries = [];
+                this.buysBreakdown = {};
+
+                this.holdBreakdownOptions = JSON.parse(JSON.stringify( this.buyBreakdownOptions )); // just use same for now
+                this.holdBreakdownSeries = [];
+                this.showHolds = false;
 
                 this.selectedImport = 0;
                 this.drawerMinimised = true;
@@ -484,9 +513,6 @@
                 this.holdingTableKey = 'HoldKey-0';
 
                 this.cryptos = [];
-
-                this.buyBreakdownSeries = [];
-                this.buysBreakdown = {};
 
                 this.genericAchieves = [];
 
@@ -609,6 +635,30 @@
             renderBuys() {
                 this.buyBreakdownOptions.labels = Object.keys(this.buysBreakdown);
                 this.buyBreakdownSeries = Object.values(this.buysBreakdown);
+            },
+            renderHolds(){
+                console.log('renderHolds()');
+
+
+                // this.holdingTableItems[crypto] = { 'crypto': crypto.toUpperCase(), 'coins': 0, 'buy': 0, 'cSale': 0, 'percentage': 0, 'obj': {}, 'conversions': {} };
+
+                this.holdBreakdownOptions.labels = [];
+                this.holdBreakdownSeries = [];
+                Object.values(this.holdingTableItems).forEach(item => {
+                        console.log(item);
+                    if(item.cSale > 0){
+                        // item.crypto || item.cSale;
+
+                        this.holdBreakdownOptions.labels.push(item.crypto);
+                        this.holdBreakdownSeries.push(item.cSale);
+                    }
+                });
+
+                this.showHolds = true;
+
+                // console.log( Object.values(this.holdingTableItems) );
+                // console.log( this.holdBreakdownOptions.labels );
+                // console.log( this.holdBreakdownSeries );
             },
 
             // calculating how much cash has been transacted
@@ -927,6 +977,7 @@
                 });
 
                 this.cleanHoldingTableData();
+                this.renderHolds();
             },
 
         },
