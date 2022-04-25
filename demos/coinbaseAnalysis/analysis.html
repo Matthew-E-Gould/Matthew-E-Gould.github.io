@@ -12,27 +12,33 @@
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
-    <link href="crypt.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <v-app  id="app" class="content">
+    <v-app id="app" class="content">
 
         <!-- left bar -->
         <v-navigation-drawer expand-on-hover app :mini-variant.sync="drawerMinimised" v-if="intialStage == false">
 
             <!-- Logo -->
             <v-list>
-                <v-list-item>
+                <v-list-item v-if="isDarkTheme">
                     <v-list-item-icon v-if="drawerMinimised">
-                        <v-img src="icon.png"></v-img>
+                        <v-img src="icon-white.png"></v-img>
                     </v-list-item-icon>
-                    <v-img v-else src="logo.png"></v-img>
+                    <v-img v-else src="logo-white.png"></v-img>
+                </v-list-item>
+                <v-list-item v-else>
+                    <v-list-item-icon v-if="drawerMinimised">
+                        <v-img src="icon-black.png"></v-img>
+                    </v-list-item-icon>
+                    <v-img v-else src="logo-black.png"></v-img>
                 </v-list-item>
             </v-list>
 
             <!-- split -->
-            <v-divider></v-divider> 
+            <v-divider></v-divider>
 
             <v-list nav dense>
                 <v-list-item-group v-model="activeNavTab">
@@ -77,9 +83,9 @@
                         <v-list-item-title>Transactions Table</v-list-item-title>
                     </v-list-item>
 
-                    
+
                     <!-- split -->
-                    <v-divider></v-divider> 
+                    <v-divider></v-divider>
 
                     <!-- Reset -->
                     <v-list-item link @click="reset">
@@ -96,8 +102,11 @@
         <!-- top bar -->
         <v-toolbar dense app id="top-nav">
 
-            <v-toolbar-title>
-                <v-img v-if="intialStage" src="logo.png" height="56" width="168"></v-img>
+            <v-toolbar-title v-if="isDarkTheme">
+                <img v-if="intialStage" src="logo-white.png" height="32px" width="auto" style="object-fit: contain;"></img>
+            </v-toolbar-title>
+            <v-toolbar-title v-else>
+                <img v-if="intialStage" src="logo-black.png" height="32px" width="auto" style="object-fit: contain;"></img>
             </v-toolbar-title>
 
             <v-spacer></v-spacer>
@@ -131,15 +140,15 @@
             <v-container fluid class="prominent">
 
                 <!-- import select dropdown -->
-                <v-overflow-btn filled :items="importDropdown" v-model="selectedImport" placeholder="Select a file origin"></v-overflow-btn>
+                <v-overflow-btn filled :items="importDropdown" v-model="selectedImport"
+                    placeholder="Select a file origin"></v-overflow-btn>
 
                 <!-- file input -->
-                <v-file-input type="file" @change="fileChanged" accept=".csv" ref="file" v-model="fileInput"
-                    label="Select .CSV file" truncate-length="45" :disabled="selectedImport < 1">
+                <v-file-input type="file" @change="fileChanged" accept=".csv" ref="file" v-model="fileInput" label="Select .CSV file" truncate-length="45" :disabled="selectedImport < 1">
                 </v-file-input>
-                
+
                 <!-- start button -->
-                <v-btn block @click="fileConfirmed" :disabled="fileInput == null">Confirm File Selection</v-btn>
+                <v-btn block @click="fileConfirmed" :disabled="fileInput == null" class="neon-blue-bg">Confirm File Selection</v-btn>
 
                 <br><br><br><br><br>
 
@@ -151,11 +160,11 @@
         </v-container>
 
         <!-- General Stats -->
-        <v-container v-if="currentTab == 'gStats'">
+        <v-container v-if="currentTab == 'gStats'" fill-height>
 
             <!-- achievement chips -->
-            <v-chip outlined v-if="diamondHands" title="Not sold" color="primary" class="mx-1"> 💎🤲 </v-chip>
-            <v-chip outlined v-for="achieve in genericAchieves" :key="achieve.text" color="white" class="mx-1">
+            <v-chip outlined v-if="diamondHands" title="Not sold" color="cyan" class="mx-1"> 💎🤲 </v-chip>
+            <v-chip outlined v-for="achieve in genericAchieves" :key="achieve.text" color="blue" class="mx-1">
                 {{ achieve.value }} {{ achieve.text }} <span v-if="achieve.value > 1">s</span>
             </v-chip>
 
@@ -208,8 +217,7 @@
                             Buy Breakdown
                         </v-card-title>
 
-                        <apexchart type="pie" width="380" :options="buyBreakdownOptions"
-                            :series="buyBreakdownSeries">
+                        <apexchart type="pie" width="380" :options="buyBreakdownOptions" :series="buyBreakdownSeries">
                         </apexchart>
                     </v-card>
                 </v-col>
@@ -221,8 +229,7 @@
                             Representative Value Held
                         </v-card-title>
 
-                        <apexchart type="pie" width="380" :options="holdBreakdownOptions"
-                            :series="holdBreakdownSeries">
+                        <apexchart type="pie" width="380" :options="holdBreakdownOptions" :series="holdBreakdownSeries">
                         </apexchart>
                     </v-card>
                 </v-col>
@@ -230,85 +237,95 @@
             </v-row>
 
         </v-container>
-        
+
         <!-- Holdings -->
-        <v-container v-if="currentTab == 'holdings'">
+        <v-container v-if="currentTab == 'holdings'" fill-height>
 
-            <v-alert dense border="left" type="warning">
-                <strong>Note:</strong> data may not be accurate as some information is pulled from the notes and relies on data provided from the CSV file and APIs
-            </v-alert>
+            <v-col cols="12">
+                <v-alert dense border="left" type="warning">
+                    <strong>Note:</strong> data may not be accurate as some information is pulled from the notes and relies
+                    on data provided from the CSV file and APIs
+                </v-alert>
+            </v-col>
 
-            <v-toolbar flat>
-                <v-text-field v-model="holdingTableSearch" append-icon="mdi-magnify" label="Search Holdings" single-line hide-details></v-text-field>
-                <div class="mx-2"></div>
-                <v-combobox label="Select Fiat Currency" class="v-toolbared-combobox" v-if="false"></v-combobox>
-            </v-toolbar>
-            <br>
-            <v-data-table :headers="holdingTableHeaders" :items="holdingTableItemsClean"
-                :search="holdingTableSearch" :key="holdingTableKey"
-                class="v-data-table-squared"
-            >
+            <v-col cols="12">
+                <v-toolbar flat>
+                    <v-text-field v-model="holdingTableSearch" append-icon="mdi-magnify" label="Search Holdings" single-line
+                        hide-details></v-text-field>
+                    <div class="mx-2"></div>
+                    <v-combobox label="Select Fiat Currency" class="v-toolbared-combobox" v-if="false"></v-combobox>
+                </v-toolbar>
+            </v-col>
 
-                <template v-slot:item.buy="{ item }">
-                    <span style="color: green;" v-if="parseFloat(item.buy) <= 0">{{ item.buy }}</span>
-                    <span v-else>{{ item.buy }}</span>
-                </template>
+                <v-data-table :headers="holdingTableHeaders" :items="holdingTableItemsClean" :search="holdingTableSearch" :key="holdingTableKey" class="v-data-table-squared">
 
-                <template v-slot:item.percentage="{ item }">
-                    <span style="color: green;" v-if="parseInt(item.percentage) >= 100">{{
-                        item.percentage }}%</span>
-                    <span style="color: red;" v-else>{{ item.percentage }}%</span>
-                </template>
+                    <template v-slot:item.buy="{ item }">
+                        <span style="color: green;" v-if="parseFloat(item.buy) <= 0">{{ item.buy }}</span>
+                        <span v-else>{{ item.buy }}</span>
+                    </template>
 
-            </v-data-table>
+                    <template v-slot:item.percentage="{ item }">
+                        <span style="color: green;" v-if="parseInt(item.percentage) >= 100">
+                            {{ item.percentage }}%
+                        </span>
+                        <span style="color: red;" v-else>{{ item.percentage }}%</span>
+                    </template>
+
+                </v-data-table>
 
         </v-container>
-            
+
         <!-- Calendar -->
-        <v-container v-if="currentTab == 'calendar'" height="100%">
-            <v-toolbar flat>
+        <v-container v-if="currentTab == 'calendar'" fill-height>
 
-                <v-btn fab text color="grey darken-2" @click="calendarPrev">
-                    <v-icon>
-                        mdi-chevron-left
-                    </v-icon>
-                </v-btn>
+            <v-col cols="12">
+                <v-toolbar flat>
 
-                <v-toolbar-title v-if="$refs.calendar">
-                    {{ $refs.calendar.title }}
-                </v-toolbar-title>
+                    <v-btn fab text color="grey darken-2" @click="calendarPrev">
+                        <v-icon>
+                            mdi-chevron-left
+                        </v-icon>
+                    </v-btn>
 
-                <v-btn v-if="calendarType != 'month'" @click="calendarType = 'month'" class="ml-2">
-                    Back To Month View
-                </v-btn>
+                    <v-toolbar-title v-if="$refs.calendar">
+                        {{ $refs.calendar.title }}
+                    </v-toolbar-title>
 
-                <v-spacer></v-spacer>
+                    <v-btn v-if="calendarType != 'month'" @click="calendarType = 'month'" class="ml-2">
+                        Back To Month View
+                    </v-btn>
 
-                <v-btn fab text color="grey darken-2" @click="calendarNext">
-                    <v-icon>
-                        mdi-chevron-right
-                    </v-icon>
-                </v-btn>
+                    <v-spacer></v-spacer>
 
-            </v-toolbar>
-            <br>
-            <v-sheet height="100%">
-                <v-calendar ref="calendar" v-model="calendarModel" :events="calendarData"
-                    @click:event="viewCalendarDay" @click:more="viewCalendarDay"
-                    @click:date="viewCalendarDay" :type="calendarType"
-                    style="border: solid 1px #9E9E9E;" height="100%"></v-calendar>
-            </v-sheet>
+                    <v-btn fab text color="grey darken-2" @click="calendarNext">
+                        <v-icon>
+                            mdi-chevron-right
+                        </v-icon>
+                    </v-btn>
+
+                </v-toolbar>
+            </v-col>
+            
+            <v-col cols="12" style="height: 775px;">
+                <v-sheet height="100%">
+                    <v-calendar ref="calendar" v-model="calendarModel" :events="calendarData" @click:event="viewCalendarDay"
+                        @click:more="viewCalendarDay" @click:date="viewCalendarDay" :type="calendarType"
+                        style="border: solid 1px #9E9E9E;" height="1000"></v-calendar>
+                </v-sheet>
+            </v-col>
+
         </v-container>
 
         <!-- Transactions -->
-        <v-container v-if="currentTab == 'transactions'">
+        <v-container v-if="currentTab == 'transactions'" fill-height>
 
             <v-toolbar flat>
-                <v-text-field v-model="transactionTableSearch" append-icon="mdi-magnify" label="Search Transactions" single-line hide-details>
+                <v-text-field v-model="transactionTableSearch" append-icon="mdi-magnify" label="Search Transactions"
+                    single-line hide-details>
                 </v-text-field>
             </v-toolbar>
             <br>
-            <v-data-table :headers="transactionTableHeaders" :items="transactionTableItems" :search="transactionTableSearch" class="v-data-table-squared" flat>
+            <v-data-table :headers="transactionTableHeaders" :items="transactionTableItems" :search="transactionTableSearch" class="v-data-table-squared">
             </v-data-table>
 
         </v-container>
@@ -338,9 +355,11 @@
         data() {
             return {
 
+                dataTableOpts: {'items-per-page-options': [15, 30, 50, 100, -1]},
+
                 importDropdown: [
-                    {text: 'Coinbase', value: 1},
-                    {text: 'Want to import a different dataset? Contact me!', value: -1},
+                    { text: 'Coinbase', value: 1 },
+                    { text: 'Want to import a different dataset? Contact me!', value: -1 },
                 ],
                 selectedImport: 0,
                 drawerMinimised: true,
@@ -415,16 +434,18 @@
                 coinGekoRes: [],
             }
         },
-        
+
         mounted() {
             console.log('mounted V0.9');
             this.doMount();
         },
-        
+
         methods: {
 
             // Setup and utils
-            doMount(){
+            doMount() {
+                this.$vuetify.theme.dark = true;
+
                 this.reset();
 
                 // consider making this a req to https://api.coingecko.com/api/v3/coins/list instead
@@ -447,7 +468,7 @@
                             });
 
                     })
-                ;
+                    ;
             },
             reset() {
 
@@ -473,7 +494,7 @@
                 this.buyBreakdownSeries = [];
                 this.buysBreakdown = {};
 
-                this.holdBreakdownOptions = JSON.parse(JSON.stringify( this.buyBreakdownOptions )); // just use same for now
+                this.holdBreakdownOptions = JSON.parse(JSON.stringify(this.buyBreakdownOptions)); // just use same for now
                 this.holdBreakdownSeries = [];
                 this.showHolds = false;
 
@@ -526,35 +547,35 @@
             },
 
             // UX
-            setTab(tab){
+            setTab(tab) {
                 this.currentTab = tab;
 
-                switch(tab){
+                switch (tab) {
                     case 'import':
 
-                    break;
+                        break;
 
                     case 'gStats':
 
-                    break;
+                        break;
 
                     case 'holdings':
 
-                    break;
+                        break;
 
                     case 'calendar':
 
-                    break;
+                        break;
 
                     case 'transactions':
 
-                    break;
+                        break;
                 }
             },
-            switchTheme(){
+            switchTheme() {
                 this.$vuetify.theme.dark = !this.$vuetify.theme.dark
             },
-            aboutDev(){
+            aboutDev() {
                 window.open('https://Matthew-E-Gould.github.io', '_blank');
             },
 
@@ -636,7 +657,7 @@
                 this.buyBreakdownOptions.labels = Object.keys(this.buysBreakdown);
                 this.buyBreakdownSeries = Object.values(this.buysBreakdown);
             },
-            renderHolds(){
+            renderHolds() {
                 console.log('renderHolds()');
 
 
@@ -645,8 +666,8 @@
                 this.holdBreakdownOptions.labels = [];
                 this.holdBreakdownSeries = [];
                 Object.values(this.holdingTableItems).forEach(item => {
-                        console.log(item);
-                    if(item.cSale > 0){
+                    console.log(item);
+                    if (item.cSale > 0) {
                         // item.crypto || item.cSale;
 
                         this.holdBreakdownOptions.labels.push(item.crypto);
@@ -824,7 +845,7 @@
             //////////////////////////
             // transaction table stuff
             formatHeadersForTable() {
-                if (this.transactionTableHeaders.length == 0){
+                if (this.transactionTableHeaders.length == 0) {
                     this.headers.forEach(header => {
                         this.transactionTableHeaders.push({
                             text: header,
@@ -898,7 +919,7 @@
 
                     // brute force lite search array of items
                     this.coinGekoData.forEach(coinData => {
-                        if ( !coinData.name.includes('(Wormhole)') && coinsToFind.includes(coinData.symbol)) { // don't want wormholes
+                        if (!coinData.name.includes('(Wormhole)') && coinsToFind.includes(coinData.symbol)) { // don't want wormholes
 
                             coinsToGet.push(coinData.id);
                             this.coinsProcessed.push(coinData);
@@ -914,7 +935,7 @@
                         if (coinsToFind.length === 0) return;
                     });
 
-                    if( !coinsToGet.includes('bitcoin') ) coinsToGet.push('bitcoin'); // if no bitcoin, add it to show their equiv bitcoin ownership
+                    if (!coinsToGet.includes('bitcoin')) coinsToGet.push('bitcoin'); // if no bitcoin, add it to show their equiv bitcoin ownership
                     this.cryptoParam = coinsToGet.join(",");
                     this.fiatParam = Object.keys(this.buysBreakdown).join(",");
                     this.queryCoinGeko();
@@ -983,10 +1004,10 @@
         },
 
         watch: {
-            selectedImport(v){
+            selectedImport(v) {
                 // console.log(v);
 
-                if(v === -1){
+                if (v === -1) {
                     this.selectedImport = 0;
                     v = 0;
                     window.open("https://matthew-e-gould.github.io#contact", "_blank");
@@ -995,30 +1016,41 @@
         },
 
         computed: {
-            appBarHeight(){
+            appBarHeight() {
                 return document.getElementById('top-nav').style.height.replace('px', '');
-            }
+            },
+            isDarkTheme(){
+                return this.$vuetify.theme.dark;
+            },
         },
     })
 
 </script>
 
 <style>
+    .neon-blue-bg{
+        background-color: #4D4DFF !important;
+    }
     .black-bg {
         background-color: #131619 !important;
     }
+
     .dark-bg {
         background-color: #343D46 !important;
     }
+
     .beige-bg {
         background-color: #7D003E !important;
     }
+
     .navy-bg {
         background-color: #003E7D !important;
     }
+
     .moss-bg {
         background-color: #3E7D00 !important;
     }
+
     .white-bg {
         background-color: white !important;
     }
@@ -1030,6 +1062,7 @@
     .v-data-table-squared {
         border-radius: 0px !important;
     }
+
     .v-toolbared-combobox {
         height: 33px;
     }
