@@ -24,15 +24,17 @@
 
         <!-- Main content -->
         <v-main>
-            <v-sheet class="mx-auto pa-2 pt-6" color="grey-lighten-4">
-                
-                <v-sheet color="grey-lighten-2" rounded="pill" class="px-2 mb-2"> Skillset </v-sheet>
+
+            <!-- skills -->
+            <v-sheet v-for="(row, index) in rows" class="mx-auto pa-2 pt-6" :color="(index%2)? 'grey-lighten-2':'grey-lighten-4'">
+
+                <v-sheet :color="(index%2)? 'grey':'grey-lighten-2'" rounded="pill" class="px-2 mx-1 mb-2">{{ `${row.title} (${row.entries.length} items)` }}</v-sheet>
 
                 <v-slide-group show-arrows>
-                    <v-slide-group-item v-for="skill in skills" :key="skill.title">
-                        <v-card width="400" height="200" class="mr-2">
-                            <v-img :src="skill.image" class="white--text align-end">
-                                <v-card-title>{{ skill.title }}</v-card-title>
+                    <v-slide-group-item v-for="entry in row.entries" :key="entry.title">
+                        <v-card class="mx-1 my-1" @click="entryClicked(entry)">
+                            <v-img cover :src="entry.image" class="align-end" :width="row.cardWidths" :height="row.cardHeights">
+                                <v-card-title :style="`color: ${entry.textColor};`">{{ entry.title }}</v-card-title>
                             </v-img>
                         </v-card>
                     </v-slide-group-item>
@@ -40,24 +42,32 @@
 
             </v-sheet>
 
-            <v-sheet class="mx-auto pa-2 pt-6" color="grey-lighten-2">
-                <v-sheet color="grey" height="24" rounded="pill" width="88"></v-sheet>
+            <v-dialog v-model="currentDialog" width="720">
+                <v-card>
 
-                <v-slide-group show-arrows>
-                    <v-slide-group-item v-for="n in 15" :key="n">
-                        <v-sheet :width="n === 1 ? 300 : 150" color="grey-lighten-1" class="ma-3" height="200"
-                            rounded></v-sheet>
-                    </v-slide-group-item>
-                </v-slide-group>
+                    <v-card-title>
+                        {{ currentDialog.dialogTitle != undefined ? currentDialog.dialogTitle : currentDialog.title }}
+                    </v-card-title>
 
-                <v-container fluid>
-                    <v-row>
-                        <v-col v-for="n in 24" :key="n" cols="2">
-                            <v-sheet color="grey-lighten-1" height="200" rounded></v-sheet>
-                        </v-col>
-                    </v-row>
-                </v-container>
-            </v-sheet>
+                    <v-card-title v-if="currentDialog.confidence !== undefined">
+                        Confidence: <v-icon v-for="n in 5" :icon="getStar(n, currentDialog.confidence)"></v-icon>
+                    </v-card-title>
+
+                    <v-card-text>
+                        <v-list lines="two">
+                            <v-list-item v-for="(entry, index) in currentDialog.content" :key="index" prepend-icon="mdi-circle">
+                                {{ entry }}
+                            </v-list-item>
+                        </v-list>
+                    </v-card-text>
+
+                    <v-btn text @click="closeDialogue()">
+                        Close
+                    </v-btn>
+
+                </v-card>
+            </v-dialog>
+
         </v-main>
     </v-app>
 </template>
@@ -69,69 +79,235 @@ export default {
     props: {},
     data() {
         return {
-            skills: [
+
+            currentDialog: null,
+
+            rows: [
+
+                /////// /////// ///////
                 {
-                    image: "@/assets/logo.svg",
-                    title: "Software Security",
-                    content: [
-                        "Had training on secure systems concepts during formal years at University.",
-                        "Moved on to apply the learnt concepts to personal and professional projects through use of middleware, policies and input validation to assure that systems were secure.",
-                        "I am looking into cryptology at a further level so that improved decisions can be made about when, where & how to use cryptography in the future.",
+                    title: 'Skill set',
+                    cardWidths: '400',
+                    cardHeights: '300',
+                    entries: [
+                        {
+                            textColor: "#FFF",
+                            image: "src/assets/images/skills/dev.png",
+                            title: "Software Development",
+                            confidence: 5,
+                            content: [
+                                "Passionate for software development and found joy in programming, whether in profession, education or recreation.",
+                                "Developed software in his own time towards the end of collage and throughout university.",
+                                "While working at finative, I produced a working product (that was used in internal betas), that was constantly updated with new features, as a project leader for 14 months."
+                            ],
+                        },
+                        {
+                            textColor: "#FFF",
+                            image: "src/assets/images/skills/remote.png",
+                            title: "Remote Work",
+                            confidence: 4.5,
+                            content: [
+                                "Let's be honest, everyone has had to get used to working on a remote environment in 2020, for me that started in March when the Alacrity foundation went into lock-down, since then I have also experienced losing teammates, hiring new team, training new team and giving meaningful feedback to teammates.",
+                                "As an individual that plays video games, I am comfortable with communicating concisely in many varieties over the internet.",
+                                "I am also very comfortable with working in-person."
+                            ],
+                        },
+                        {
+                            textColor: "#FFF",
+                            image: "src/assets/images/skills/security.png",
+                            title: "Software Security",
+                            confidence: 3.5,
+                            content: [
+                                "Had training on secure systems concepts during formal years at University.",
+                                "Moved on to apply the learnt concepts to personal and professional projects through use of middleware, policies and input validation to assure that systems were secure.",
+                                "I am looking into cryptology at a further level so that improved decisions can be made about when, where & how to use cryptography in the future.",
+                            ],
+                        },
+                        {
+                            textColor: "#FFF",
+                            image: "src/assets/images/skills/printer.png",
+                            title: "CAD & 3D Printing",
+                            confidence: 3,
+                            content: [
+                                "Trained in engineering for 4 years and can use CAD software to follow engineering specifications.",
+                                "Owns a 3D printer and has learnt to work with slicing tools to improve the quality of models.",
+                                "Can improve production time and improve quality of post print builds by using different scaffolding structures and hardware.",
+                            ],
+                        },
                     ],
                 },
+
+                /////// /////// ///////
                 {
-                    image: "",
-                    title: "Software Development",
-                    content: [
-                        "Passionate for software development and found joy in programming, whether in profession, education or recreation.",
-                        "Developed software in his own time towards the end of collage and throughout university.",
-                        "While working at finative, I managed to produce a working product (that was used in internal betas), that was constantly updated with new features, as a project leader for 14 months."
+                    title: 'Previous Positions & Projects',
+                    cardWidths: '215',
+                    cardHeights: '200',
+                    entries: [
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Haelu",
+                            content: [
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Initia",
+                            content: [
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "myCrypting",
+                            content: [
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Recovar",
+                            content: [
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Web trawler",
+                            content: [
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Intuitix",
+                            content: [
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Finative",
+                            content: [
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Dice Game",
+                            content: [
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Smart Home Alarm",
+                            content: [
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Minesweeper",
+                            content: [
+                            ],
+                        },
                     ],
                 },
+
+                /////// /////// ///////
                 {
-                    image: "",
-                    title: "Remote Work",
-                    content: [
-                        "Let's be honest, everyone has had to get used to working on a remote environment in 2020, for me that started in March when the Alacrity foundation went into lock-down, since then I have also experienced losing teammates, hiring new team, training new team and giving meaningful feedback to teammates.",
-                        "As an individual that plays videogames, I am comfortable with communicating concisely in many varieties over the internet.",
-                        "I am also verry comfortable with working in-person."
+                    title: 'Education',
+                    cardWidths: '200',
+                    cardHeights: '200',
+                    entries: [
+                        {
+                            textColor: "#0FF",
+                            image: "src/assets/images/school/usw.jpeg",
+                            title: "USW",
+                            dialogTitle: "University of South Wales (2015 - 2019)",
+                            content: [
+                                "During collage I found a fondness towards software development so I decided to study computer science during university.",
+                                "Bsc - 2:1",
+                                "Masters - 1st"
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "src/assets/images/school/bte.jpeg",
+                            title: "BTE",
+                            dialogTitle: "Bristol Technology and Engineering Academy (2013 - 2015)",
+                            content: [
+                                "Went to an engineering collage for A-levels and to further my studies in engineering.",
+                                "Studied, Engineering, Physics and Maths",
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "src/assets/images/school/rgs.jpeg",
+                            title: "RGS",
+                            dialogTitle: "Redland Green School (2008 - 2013)",
+                            content: [
+                                "Going to school I discovered interests in computers and engineering, however a course was not available around computers at GCSE.",
+                                "9 GCSEs graded A* - C",
+                            ],
+                        },
                     ],
                 },
+
+                /////// /////// ///////
                 {
-                    image: "",
-                    title: "Engineering",
-                    content: [
-                        ""
+                    title: 'Hobbies',
+                    cardWidths: '300',
+                    cardHeights: '200',
+                    entries: [
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Software Development",
+                            content: [
+                            ],
+                        },
                     ],
                 },
-                {
-                    image: "",
-                    title: "CAD",
-                    content: [
-                        ""
-                    ],
-                },
-                {
-                    image: "",
-                    title: "3D Printing",
-                    content: [
-                        ""
-                    ],
-                },
-            ]
+
+            ],
+
         }
     },
-    mounted(){
+    mounted() {
 
     },
     methods: {
-        template(){},
+        entryClicked(entry) {
+            this.currentDialog = entry;
+        },
+
+        closeDialogue() {
+            this.currentDialog = false;
+        },
+
+        getStar(index, confidence) {
+            let overflow = confidence - (index - 1);
+            let icon = 'mdi-';
+
+            if (overflow >= 1) {
+                icon += 'star';
+            } else if (overflow > 0) {
+                icon += 'star-half-full';
+            } else {
+                icon += 'star-outline'
+            }
+
+            return icon;
+        },
     },
     computed: {
-        template(){},
+        template() { },
     },
     watch: {
-        template(newVal, oldVal){},
+        template(newVal, oldVal) { },
     },
 
 }
