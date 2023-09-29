@@ -6,6 +6,7 @@ const routes = [
     path: '/',
     // component: () => import('@/layouts/default/Default.vue'),
     children: [
+
       {
         path: '',
         name: 'Home',
@@ -15,15 +16,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
       },
       {
-        path: 'test',
-        name: 'Test',
-        component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
+        path: '/:pathMatch(.*)*',
+        name: '404',
+        component: () => import('@/views/404.vue'),
       },
-      {
-        path: 'test/test',
-        name: 'Test2',
-        component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
-      },
+      
     ],
   },
 ]
