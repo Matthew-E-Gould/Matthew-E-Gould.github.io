@@ -269,6 +269,27 @@ export default {
                             content: [
                             ],
                         },
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Motorbiking",
+                            content: [
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Astronomy",
+                            content: [
+                            ],
+                        },
+                        {
+                            textColor: "#000",
+                            image: "",
+                            title: "Video Gaming",
+                            content: [
+                            ],
+                        },
                     ],
                 },
 
