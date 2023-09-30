@@ -49,6 +49,10 @@
                         {{ currentDialog.dialogTitle != undefined ? currentDialog.dialogTitle : currentDialog.title }}
                     </v-card-title>
 
+                    <v-card-subtitle v-if="currentDialog.subtitle !== undefined">
+                        {{ currentDialog.subtitle }}
+                    </v-card-subtitle>
+
                     <v-card-title v-if="currentDialog.confidence !== undefined">
                         Confidence: <v-icon v-for="n in 5" :icon="getStar(n, currentDialog.confidence)"></v-icon>
                     </v-card-title>
@@ -147,48 +151,76 @@ export default {
                             textColor: "#000",
                             image: "",
                             title: "Haelu",
+                            subtitle: "Health platform to help track post-hospital recouperation of patients",
                             content: [
+                                "Helped Haelu architect and build a new product from the ground up",
+                                "Aided in training new staff for their product development",
+                                "Attended regular meetings about the products development and progress",
                             ],
                         },
                         {
                             textColor: "#000",
                             image: "",
                             title: "Initia",
+                            subtitle: "HR platform to help companies track the security clearing process of new employees",
                             content: [
+                                "Helped Initia develop their product ready for a state of release",
+                                "Implemented updated components that follow DRY principles",
                             ],
                         },
                         {
                             textColor: "#000",
                             image: "",
                             title: "myCrypting",
+                            subtitle: "Accounting platform to help track assets bought on coinbase",
                             content: [
+                                "Developed clear statistical anlysis of the cryptocurrencies that people were holding on coinbase",
+                                "Clear instructions on how to populate the site with data",
+                                "Serverless architecture",
+
+                                "I would have liked to develop the platform to work with multiple exchanges",
                             ],
                         },
                         {
                             textColor: "#000",
                             image: "",
                             title: "Recovar",
+                            subtitle: "Software to assist with the decomssion of old equipment at sites",
                             content: [
+                                "Attended key stakeholder meetings",
+                                "Attended board meetings",
+                                "Developed a website and mobile application that would work in tandom to aid in the decomissioning process",
+                                "Datamined the locations of decomissioning sites for key stakeholder",
                             ],
                         },
                         {
                             textColor: "#000",
                             image: "",
                             title: "Web trawler",
+                            subtitle: "Input keyword(s) you're looking for and a starting site and find linked pages that contained those keyword(s)",
                             content: [
+                                "Developed a solution that would work on both the dark web and clear web",
+                                "Would return data on what web pages were linked together and which web pages had your desired keyword(s)",
+
+                                "Would have liked to have built out an responsive UI that would allow you to better visualise the data",
                             ],
                         },
                         {
                             textColor: "#000",
                             image: "",
                             title: "Intuitix",
+                            subtitle: "Innovation management platform for large companies",
                             content: [
+                                "Implemented site polling so that users were kept up to date",
+                                "Developed multi-threaded processes to reduce data analysis times",
+                                "Code optimisation",
                             ],
                         },
                         {
                             textColor: "#000",
                             image: "",
                             title: "Finative",
+                            subtitle: "Innovation management platform for large companies",
                             content: [
                             ],
                         },
@@ -196,21 +228,35 @@ export default {
                             textColor: "#000",
                             image: "",
                             title: "Dice Game",
+                            subtitle: "2019 summer project",
                             content: [
+                                "Implemented use of polymorphism to give dice different charicteristics with minial code",
+                                "Implemented an inventory system so players could keep their dice",
+                                "Implemented a saving and loading system so that users could resume their game",
+                                "Implemented Virtual Intelligence that would make different enemies play differently",
+                                "I would have like to of developed a user interface that users could interact with",
                             ],
                         },
                         {
                             textColor: "#000",
                             image: "",
                             title: "Smart Home Alarm",
+                            subtitle: "Masters Dissertation",
                             content: [
+                                "Implemented a system on the raspberry pi",
+                                "Recognition of faces so that thesystem could determine if people were meant to be there",
+                                "Developed biometric system that would allow for users to see information about a person if they wanted to file a report",
                             ],
                         },
                         {
                             textColor: "#000",
                             image: "",
                             title: "Minesweeper",
+                            subtitle: "2018 summer project",
                             content: [
+                                "Built in python",
+                                "Developed to work on on multiple platforms",
+                                "Would have liked to implement a turn-based multiplayer system",
                             ],
                         },
                     ],
@@ -223,10 +269,30 @@ export default {
                     cardHeights: '200',
                     entries: [
                         {
+                            textColor: "#000",
+                            image: "",
+                            title: "Alacrity",
+                            dialogTitle: "The Alacrity foundation",
+                            subtitle: "2019 - 2021",
+                            content: [
+                                "Technical lead",
+                                "Incubator that helped post-grads make thier way to entrepreneurship",
+                                "Worked with co-founders to start 2 companies",
+                                "Runner up for rising star in the welsh start up awards",
+                                "Presented ideas to the foundation and to teams",
+                                "Helped other teams with issues",
+                                "Helped other 'students' during the bootcamp",
+                                "1st company, Finative, did not recieve seed investment because I was the only founder left",
+                                "2nd company, Recovar, declined seed funding becuase we felt that our issue was that our first customer, whom helped us develop the product had no intentios of buying it",
+                                "Technical lead for both Finative and Recovar",
+                            ],
+                        },
+                        {
                             textColor: "#0FF",
                             image: "src/assets/images/school/usw.jpeg",
                             title: "USW",
-                            dialogTitle: "University of South Wales (2015 - 2019)",
+                            dialogTitle: "University of South Wales",
+                            subtitle: "2015 - 2019",
                             content: [
                                 "During collage I found a fondness towards software development so I decided to study computer science during university.",
                                 "Bsc - 2:1",
@@ -237,7 +303,8 @@ export default {
                             textColor: "#000",
                             image: "src/assets/images/school/bte.jpeg",
                             title: "BTE",
-                            dialogTitle: "Bristol Technology and Engineering Academy (2013 - 2015)",
+                            dialogTitle: "Bristol Technology and Engineering Academy",
+                            subtitle: "2013 - 2015",
                             content: [
                                 "Went to an engineering collage for A-levels and to further my studies in engineering.",
                                 "Studied, Engineering, Physics and Maths",
@@ -247,7 +314,8 @@ export default {
                             textColor: "#000",
                             image: "src/assets/images/school/rgs.jpeg",
                             title: "RGS",
-                            dialogTitle: "Redland Green School (2008 - 2013)",
+                            dialogTitle: "Redland Green School",
+                            subtitle: "2008 - 2013",
                             content: [
                                 "Going to school I discovered interests in computers and engineering, however a course was not available around computers at GCSE.",
                                 "9 GCSEs graded A* - C",
