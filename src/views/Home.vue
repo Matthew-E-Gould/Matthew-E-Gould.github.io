@@ -19,14 +19,28 @@
 
         <!-- Left Bar -->
         <v-navigation-drawer floating>
+            <v-list>
 
+                <v-list-item>
+                    <v-btn block>Block</v-btn>
+                </v-list-item>
+
+                <v-list-item>
+                    <v-btn variant="text">Text</v-btn>
+                </v-list-item>
+
+                <v-list-item>
+                    <v-btn variant="text" block>Block Text</v-btn>
+                </v-list-item>
+
+            </v-list>
         </v-navigation-drawer>
 
         <!-- Main content -->
         <v-main>
 
             <!-- skills -->
-            <v-sheet v-for="(row, index) in rows" class="mx-auto pa-2 pt-6" :color="(index%2)? 'grey-lighten-2':'grey-lighten-4'">
+            <v-sheet v-for="(row, index) in rows" :key="index" class="mx-auto pa-2 pt-6" :color="(index%2)? 'grey-lighten-2':'grey-lighten-4'">
 
                 <v-sheet :color="(index%2)? 'grey':'grey-lighten-2'" rounded="pill" class="px-2 mx-1 mb-2">{{ `${row.title} (${row.entries.length} items)` }}</v-sheet>
 
@@ -54,7 +68,7 @@
                     </v-card-subtitle>
 
                     <v-card-title v-if="currentDialog.confidence !== undefined">
-                        Confidence: <v-icon v-for="n in 5" :icon="getStar(n, currentDialog.confidence)"></v-icon>
+                        Confidence: <v-icon v-for="n in 5" :icon="getStar(n, currentDialog.confidence)" />
                     </v-card-title>
 
                     <v-card-text>
@@ -84,7 +98,7 @@ export default {
     data() {
         return {
 
-            currentDialog: null,
+             currentDialog: null,
 
             rows: [
 
@@ -369,6 +383,25 @@ export default {
 
     },
     methods: {
+        decide(entries = [true, false], index = -1){
+            let output = null;
+            
+            if(index === -1){
+                output = entries[this.getRndInteger(0, entries.length)];
+
+            } else {
+                output = entries[index % entries.length+1];
+
+                
+            }
+
+            return output;
+        },
+
+        getRndInteger(min = 0, max = 1) {
+            return Math.floor(Math.random() * (max - min) ) + min;
+        },
+
         entryClicked(entry) {
             this.currentDialog = entry;
         },
