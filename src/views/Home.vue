@@ -39,23 +39,18 @@
         <!-- Main content -->
         <v-main>
 
-            <!-- skills -->
+            <!-- skills, previous positions, education, hobbies -->
             <v-sheet v-for="(row, index) in rows" :key="index" class="mx-auto pa-2 pt-6" :color="(index%2)? 'grey-lighten-2':'grey-lighten-4'">
 
                 <v-sheet :color="(index%2)? 'grey':'grey-lighten-2'" rounded="pill" class="px-2 mx-1 mb-2">{{ `${row.title} (${row.entries.length} items)` }}</v-sheet>
 
                 <v-slide-group show-arrows>
-                    <v-slide-group-item v-for="entry in row.entries" :key="entry.title">
-                        <v-card class="mx-1 my-1" @click="entryClicked(entry)">
-                            <v-img cover :src="entry.image" class="align-end" :width="row.cardWidths" :height="row.cardHeights">
-                                <v-card-title :style="`color: ${entry.textColor};`">{{ entry.title }}</v-card-title>
-                            </v-img>
-                        </v-card>
-                    </v-slide-group-item>
+                    <GenericItemCard v-for="entry in row.entries" :key="entry.title" :entry="entry" :row="row" @custom-click="entryClicked" />
                 </v-slide-group>
 
             </v-sheet>
 
+            <!-- popup -->
             <v-dialog v-model="currentDialog" width="720">
                 <v-card>
 
@@ -63,13 +58,19 @@
                         {{ currentDialog.dialogTitle != undefined ? currentDialog.dialogTitle : currentDialog.title }}
                     </v-card-title>
 
-                    <v-card-subtitle v-if="currentDialog.subtitle !== undefined">
+                    <v-card-subtitle v-if="currentDialog.subtitle != undefined">
                         {{ currentDialog.subtitle }}
                     </v-card-subtitle>
 
-                    <v-card-title v-if="currentDialog.confidence !== undefined">
+                    <v-btn v-if="currentDialog.link != undefined" variant="text" @click="linkClicked(currentDialog.link)" append-icon="mdi-open-in-new" class="mt-4">
+                        {{ currentDialog.link }}
+                    </v-btn>
+
+                    <v-card-title v-if="currentDialog.confidence != undefined">
                         Confidence: <v-icon v-for="n in 5" :icon="getStar(n, currentDialog.confidence)" />
                     </v-card-title>
+
+                    <v-divider />
 
                     <v-card-text>
                         <v-list lines="two">
@@ -91,17 +92,15 @@
 </template>
   
 <script>
+import GenericItemCard from '@/components/GenericItemCard.vue';
 
 export default {
-    name: 'home',
+    name: 'Home',
     props: {},
     data() {
         return {
-
-             currentDialog: null,
-
+            currentDialog: null,
             rows: [
-
                 /////// /////// ///////
                 {
                     title: 'Skill set',
@@ -110,18 +109,18 @@ export default {
                     entries: [
                         {
                             textColor: "#FFF",
-                            image: "src/assets/images/skills/dev.png",
+                            image: "src/assets/images/skills/dev.jpg",
                             title: "Software Development",
                             confidence: 5,
                             content: [
                                 "Passionate for software development and found joy in programming, whether in profession, education or recreation.",
                                 "Developed software in his own time towards the end of collage and throughout university.",
-                                "While working at finative, I produced a working product (that was used in internal betas), that was constantly updated with new features, as a project leader for 14 months."
+                                "While working at Finative, I produced a working product (that was used in internal betas), that was constantly updated with new features, as a project leader for 14 months."
                             ],
                         },
                         {
                             textColor: "#FFF",
-                            image: "src/assets/images/skills/remote.png",
+                            image: "src/assets/images/skills/remote.jpg",
                             title: "Remote Work",
                             confidence: 4.5,
                             content: [
@@ -132,7 +131,7 @@ export default {
                         },
                         {
                             textColor: "#FFF",
-                            image: "src/assets/images/skills/security.png",
+                            image: "src/assets/images/skills/security.jpg",
                             title: "Software Security",
                             confidence: 3.5,
                             content: [
@@ -143,7 +142,7 @@ export default {
                         },
                         {
                             textColor: "#FFF",
-                            image: "src/assets/images/skills/printer.png",
+                            image: "src/assets/images/skills/printer.jpg",
                             title: "CAD & 3D Printing",
                             confidence: 3,
                             content: [
@@ -154,7 +153,6 @@ export default {
                         },
                     ],
                 },
-
                 /////// /////// ///////
                 {
                     title: 'Previous Positions & Projects',
@@ -163,9 +161,10 @@ export default {
                     entries: [
                         {
                             textColor: "#000",
-                            image: "",
+                            image: "src/assets/images/work/haelu.jpg",
                             title: "Haelu",
-                            subtitle: "Health platform to help track post-hospital recouperation of patients",
+                            link: "https://haelu.co.uk/",
+                            subtitle: "Health platform to help track post-hospital recuperation of patients",
                             content: [
                                 "Helped Haelu architect and build a new product from the ground up",
                                 "Aided in training new staff for their product development",
@@ -173,8 +172,8 @@ export default {
                             ],
                         },
                         {
-                            textColor: "#000",
-                            image: "",
+                            textColor: "#0F0",
+                            image: "src/assets/images/work/initia.jpg",
                             title: "Initia",
                             subtitle: "HR platform to help companies track the security clearing process of new employees",
                             content: [
@@ -186,43 +185,44 @@ export default {
                             textColor: "#000",
                             image: "",
                             title: "myCrypting",
+                            link: "https://www.mycrypting.com/",
                             subtitle: "Accounting platform to help track assets bought on coinbase",
                             content: [
-                                "Developed clear statistical anlysis of the cryptocurrencies that people were holding on coinbase",
+                                "Developed clear statistical analysis of the cryptocurrencies that people were holding on coinbase",
                                 "Clear instructions on how to populate the site with data",
                                 "Serverless architecture",
-
                                 "I would have liked to develop the platform to work with multiple exchanges",
                             ],
                         },
                         {
-                            textColor: "#000",
-                            image: "",
-                            title: "Recovar",
-                            subtitle: "Software to assist with the decomssion of old equipment at sites",
+                            textColor: "#F58641",
+                            image: "src/assets/images/work/recovar.jpg",
+                            title: "RECOVAR",
+                            subtitle: "Software to assist with the decommission of old equipment at sites",
                             content: [
                                 "Attended key stakeholder meetings",
                                 "Attended board meetings",
-                                "Developed a website and mobile application that would work in tandom to aid in the decomissioning process",
-                                "Datamined the locations of decomissioning sites for key stakeholder",
+                                "Developed a website and mobile application that would work in tandem to aid in the decommissioning process",
+                                "Data-mined the locations of decommissioning sites for key stakeholder",
                             ],
                         },
                         {
                             textColor: "#000",
                             image: "",
                             title: "Web trawler",
+                            link: "https://github.com/Matthew-E-Gould/Keyword_based_webcrawler",
                             subtitle: "Input keyword(s) you're looking for and a starting site and find linked pages that contained those keyword(s)",
                             content: [
                                 "Developed a solution that would work on both the dark web and clear web",
                                 "Would return data on what web pages were linked together and which web pages had your desired keyword(s)",
-
                                 "Would have liked to have built out an responsive UI that would allow you to better visualise the data",
                             ],
                         },
                         {
                             textColor: "#000",
-                            image: "",
+                            image: "src/assets/images/work/intuitix.jpg",
                             title: "Intuitix",
+                            link: "https://intuitix.co/",
                             subtitle: "Innovation management platform for large companies",
                             content: [
                                 "Implemented site polling so that users were kept up to date",
@@ -232,11 +232,10 @@ export default {
                         },
                         {
                             textColor: "#000",
-                            image: "",
+                            image: "src/assets/images/work/finative.jpg",
                             title: "Finative",
-                            subtitle: "Innovation management platform for large companies",
-                            content: [
-                            ],
+                            subtitle: "Client portal for brokerages",
+                            content: [],
                         },
                         {
                             textColor: "#000",
@@ -244,7 +243,7 @@ export default {
                             title: "Dice Game",
                             subtitle: "2019 summer project",
                             content: [
-                                "Implemented use of polymorphism to give dice different charicteristics with minial code",
+                                "Implemented use of polymorphism to give dice different characteristics with minimal code",
                                 "Implemented an inventory system so players could keep their dice",
                                 "Implemented a saving and loading system so that users could resume their game",
                                 "Implemented Virtual Intelligence that would make different enemies play differently",
@@ -258,7 +257,7 @@ export default {
                             subtitle: "Masters Dissertation",
                             content: [
                                 "Implemented a system on the raspberry pi",
-                                "Recognition of faces so that thesystem could determine if people were meant to be there",
+                                "Recognition of faces so that the system could determine if people were meant to be there",
                                 "Developed biometric system that would allow for users to see information about a person if they wanted to file a report",
                             ],
                         },
@@ -267,6 +266,7 @@ export default {
                             image: "",
                             title: "Minesweeper",
                             subtitle: "2018 summer project",
+                            link: "https://github.com/Matthew-E-Gould/MultiSweeper",
                             content: [
                                 "Built in python",
                                 "Developed to work on on multiple platforms",
@@ -275,7 +275,6 @@ export default {
                         },
                     ],
                 },
-
                 /////// /////// ///////
                 {
                     title: 'Education',
@@ -284,10 +283,11 @@ export default {
                     entries: [
                         {
                             textColor: "#000",
-                            image: "",
+                            image: "src/assets/images/edu/alacrity.jpg",
                             title: "Alacrity",
                             dialogTitle: "The Alacrity foundation",
                             subtitle: "2019 - 2021",
+                            link: "https://alacrityfoundation.co.uk/",
                             content: [
                                 "Technical lead",
                                 "Incubator that helped post-grads make thier way to entrepreneurship",
@@ -297,15 +297,16 @@ export default {
                                 "Helped other teams with issues",
                                 "Helped other 'students' during the bootcamp",
                                 "1st company, Finative, did not recieve seed investment because I was the only founder left",
-                                "2nd company, Recovar, declined seed funding becuase we felt that our issue was that our first customer, whom helped us develop the product had no intentios of buying it",
-                                "Technical lead for both Finative and Recovar",
+                                "2nd company, RECOVAR, declined seed funding becuase we felt that our issue was that our first customer, whom helped us develop the product had no intentios of buying it",
+                                "Technical lead for both Finative and RECOVAR",
                             ],
                         },
                         {
                             textColor: "#0FF",
-                            image: "src/assets/images/school/usw.jpeg",
+                            image: "src/assets/images/edu/usw.jpg",
                             title: "USW",
                             dialogTitle: "University of South Wales",
+                            link: "https://www.southwales.ac.uk/",
                             subtitle: "2015 - 2019",
                             content: [
                                 "During collage I found a fondness towards software development so I decided to study computer science during university.",
@@ -315,7 +316,7 @@ export default {
                         },
                         {
                             textColor: "#000",
-                            image: "src/assets/images/school/bte.jpeg",
+                            image: "src/assets/images/edu/bte.jpg",
                             title: "BTE",
                             dialogTitle: "Bristol Technology and Engineering Academy",
                             subtitle: "2013 - 2015",
@@ -326,10 +327,11 @@ export default {
                         },
                         {
                             textColor: "#000",
-                            image: "src/assets/images/school/rgs.jpeg",
+                            image: "src/assets/images/edu/rgs.jpg",
                             title: "RGS",
                             dialogTitle: "Redland Green School",
                             subtitle: "2008 - 2013",
+                            link: "https://www.redlandgreen.bristol.sch.uk/",
                             content: [
                                 "Going to school I discovered interests in computers and engineering, however a course was not available around computers at GCSE.",
                                 "9 GCSEs graded A* - C",
@@ -337,7 +339,6 @@ export default {
                         },
                     ],
                 },
-
                 /////// /////// ///////
                 {
                     title: 'Hobbies',
@@ -348,82 +349,71 @@ export default {
                             textColor: "#000",
                             image: "",
                             title: "Software Development",
-                            content: [
-                            ],
+                            content: [],
                         },
                         {
                             textColor: "#000",
                             image: "",
                             title: "Motorbiking",
-                            content: [
-                            ],
+                            content: [],
                         },
                         {
                             textColor: "#000",
                             image: "",
                             title: "Astronomy",
-                            content: [
-                            ],
+                            content: [],
                         },
                         {
                             textColor: "#000",
                             image: "",
                             title: "Video Gaming",
-                            content: [
-                            ],
+                            content: [],
                         },
                     ],
                 },
-
             ],
-
-        }
+        };
     },
     mounted() {
-
     },
     methods: {
-        decide(entries = [true, false], index = -1){
+        decide(entries = [true, false], index = -1) {
             let output = null;
-            
-            if(index === -1){
+            if (index === -1) {
                 output = entries[this.getRndInteger(0, entries.length)];
-
-            } else {
-                output = entries[index % entries.length+1];
-
-                
             }
-
+            else {
+                output = entries[index % entries.length + 1];
+            }
             return output;
         },
-
         getRndInteger(min = 0, max = 1) {
-            return Math.floor(Math.random() * (max - min) ) + min;
+            return Math.floor(Math.random() * (max - min)) + min;
         },
-
         entryClicked(entry) {
             this.currentDialog = entry;
         },
-
         closeDialogue() {
             this.currentDialog = false;
         },
-
         getStar(index, confidence) {
             let overflow = confidence - (index - 1);
             let icon = 'mdi-';
-
             if (overflow >= 1) {
                 icon += 'star';
-            } else if (overflow > 0) {
-                icon += 'star-half-full';
-            } else {
-                icon += 'star-outline'
             }
-
+            else if (overflow > 0) {
+                icon += 'star-half-full';
+            }
+            else {
+                icon += 'star-outline';
+            }
             return icon;
         },
+        linkClicked(url){
+            window.open(url, '_blank').focus();
+        },
+
     },
     computed: {
         template() { },
@@ -431,7 +421,7 @@ export default {
     watch: {
         template(newVal, oldVal) { },
     },
-
+    components: { GenericItemCard }
 }
 
 </script>

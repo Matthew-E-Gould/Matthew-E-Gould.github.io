@@ -1,11 +1,13 @@
 <template>
-    this is a test component
+    <v-app id="inspire">
+        
+    </v-app>
 </template>
-
+  
 <script>
 
 export default {
-    name: 'TestComponent',
+    name: 'Demos',
     props: {},
     data() {
         return { };

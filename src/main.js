@@ -5,19 +5,21 @@
  */
 
 // Components
-import App from './App.vue'
+import App from './App.vue';
 
 // Composables
-import { createApp } from 'vue'
+import { createApp } from 'vue';
 
 // Plugins
-import { registerPlugins } from '@/plugins'
+import { registerPlugins } from '@/plugins';
 
-const app = createApp(App)
+const app = createApp(App);
 
-import HelloWorld from '@/components/HelloWorld.vue'
-app.component('HelloWorld', HelloWorld)
+import HelloWorld from '@/components/HelloWorld.vue';
+app.component('HelloWorld', HelloWorld);
+import GenericItemCard from '@/components/GenericItemCard.vue';
+app.component('GenericItemCard', GenericItemCard);
 
-registerPlugins(app)
+registerPlugins(app);
 
-app.mount('#app')
+app.mount('#app');
