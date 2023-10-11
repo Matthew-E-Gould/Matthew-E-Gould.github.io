@@ -1,7 +1,7 @@
 <template>
     <v-app id="inspire">
 
-        <!-- Top Bar -->
+        <!-- Top bar -->
         <v-app-bar>
             <v-avatar class="ms-2" color="surface-variant" size="32" variant="flat"></v-avatar>
 
@@ -22,7 +22,8 @@
             <v-list>
 
                 <v-list-item v-for="(row, index) in rows" :key="index">
-                    <v-btn variant="text" block @click="scrollToRow(row)">{{ row.titleBtn ? row.titleBtn :row.title }}</v-btn>
+                    <v-btn variant="text" block @click="scrollToRow(row)">{{ row.titleBtn ? row.titleBtn : row.title
+                    }}</v-btn>
                 </v-list-item>
 
             </v-list>
@@ -32,55 +33,60 @@
         <v-main>
 
             <!-- skills, previous positions, education, hobbies -->
-            <v-sheet v-for="(row, index) in rows" :key="index" class="mx-auto pa-2 pt-6" :color="(index%2)? 'grey-lighten-2':'grey-lighten-4'">
+            <v-sheet v-for="(row, index) in rows" :key="index" class="mx-auto pa-2 pt-6"
+                :color="(index % 2) ? 'grey-lighten-2' : 'grey-lighten-4'">
 
-                <v-sheet :color="(index%2)? 'grey':'grey-lighten-2'" rounded="pill" class="px-2 mx-1 mb-2" :id="row.title">{{ `${row.title} (${row.entries.length} items)` }}</v-sheet>
+                <v-sheet :color="(index % 2) ? 'grey' : 'grey-lighten-2'" rounded="pill" class="px-2 mx-1 mb-2"
+                    :id="row.title">{{ `${row.title} (${row.entries.length} items)` }}</v-sheet>
 
                 <v-slide-group show-arrows>
-                    <GenericItemCard v-for="entry in row.entries" :key="entry.title" :entry="entry" :row="row" @custom-click="entryClicked" />
+                    <GenericItemCard v-for="entry in row.entries" :key="entry.title" :entry="entry" :row="row"
+                        @custom-click="entryClicked" />
                 </v-slide-group>
 
             </v-sheet>
 
-            <!-- popup -->
-            <v-dialog v-model="currentDialog" width="720">
-                <v-card>
-
-                    <v-card-title>
-                        {{ currentDialog.dialogTitle != undefined ? currentDialog.dialogTitle : currentDialog.title }}
-                    </v-card-title>
-
-                    <v-card-subtitle v-if="currentDialog.subtitle != undefined">
-                        {{ currentDialog.subtitle }}
-                    </v-card-subtitle>
-
-                    <v-btn v-if="currentDialog.link != undefined" variant="text" @click="linkClicked(currentDialog.link)" append-icon="mdi-open-in-new" class="mt-4">
-                        {{ currentDialog.link }}
-                    </v-btn>
-
-                    <v-card-title v-if="currentDialog.confidence != undefined">
-                        Confidence: <v-icon v-for="n in 5" :icon="getStar(n, currentDialog.confidence)" />
-                    </v-card-title>
-
-                    <v-divider />
-
-                    <v-card-text>
-                        <v-list lines="two">
-                            <v-list-item v-for="(entry, index) in currentDialog.content" :key="index" prepend-icon="mdi-circle">
-                                {{ entry }}
-                            </v-list-item>
-                        </v-list>
-                    </v-card-text>
-
-                    <v-divider />
-                    <v-btn variant="text" @click="closeDialogue()">
-                        Close
-                    </v-btn>
-
-                </v-card>
-            </v-dialog>
-
         </v-main>
+
+        <!-- Popup -->
+        <v-dialog v-model="currentDialog" width="720">
+            <v-card>
+
+                <v-card-title>
+                    {{ currentDialog.dialogTitle != undefined ? currentDialog.dialogTitle : currentDialog.title }}
+                </v-card-title>
+
+                <v-card-subtitle v-if="currentDialog.subtitle != undefined">
+                    {{ currentDialog.subtitle }}
+                </v-card-subtitle>
+
+                <v-btn v-if="currentDialog.link != undefined" variant="text" @click="linkClicked(currentDialog.link)"
+                    append-icon="mdi-open-in-new" class="mt-4">
+                    {{ currentDialog.link }}
+                </v-btn>
+
+                <v-card-title v-if="currentDialog.confidence != undefined">
+                    Confidence: <v-icon v-for="n in 5" :icon="getStar(n, currentDialog.confidence)" />
+                </v-card-title>
+
+                <v-divider />
+
+                <v-card-text>
+                    <v-list lines="two">
+                        <v-list-item v-for="(entry, index) in currentDialog.content" :key="index" prepend-icon="mdi-circle">
+                            {{ entry }}
+                        </v-list-item>
+                    </v-list>
+                </v-card-text>
+
+                <v-divider />
+                <v-btn variant="text" @click="closeDialogue()">
+                    Close
+                </v-btn>
+
+            </v-card>
+        </v-dialog>
+
     </v-app>
 </template>
   
@@ -133,10 +139,10 @@ export default {
             }
             return icon;
         },
-        linkClicked(url){
+        linkClicked(url) {
             window.open(url, '_blank').focus();
         },
-        scrollToRow(row){
+        scrollToRow(row) {
             document.getElementById(row.title).scrollIntoView()
         },
 
