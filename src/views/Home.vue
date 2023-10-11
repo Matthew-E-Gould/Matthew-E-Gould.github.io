@@ -21,16 +21,8 @@
         <v-navigation-drawer floating>
             <v-list>
 
-                <v-list-item>
-                    <v-btn block>Block</v-btn>
-                </v-list-item>
-
-                <v-list-item>
-                    <v-btn variant="text">Text</v-btn>
-                </v-list-item>
-
-                <v-list-item>
-                    <v-btn variant="text" block>Block Text</v-btn>
+                <v-list-item v-for="(row, index) in rows" :key="index">
+                    <v-btn variant="text" block @click="scrollToRow(row)">{{ row.titleBtn ? row.titleBtn :row.title }}</v-btn>
                 </v-list-item>
 
             </v-list>
@@ -42,7 +34,7 @@
             <!-- skills, previous positions, education, hobbies -->
             <v-sheet v-for="(row, index) in rows" :key="index" class="mx-auto pa-2 pt-6" :color="(index%2)? 'grey-lighten-2':'grey-lighten-4'">
 
-                <v-sheet :color="(index%2)? 'grey':'grey-lighten-2'" rounded="pill" class="px-2 mx-1 mb-2">{{ `${row.title} (${row.entries.length} items)` }}</v-sheet>
+                <v-sheet :color="(index%2)? 'grey':'grey-lighten-2'" rounded="pill" class="px-2 mx-1 mb-2" :id="row.title">{{ `${row.title} (${row.entries.length} items)` }}</v-sheet>
 
                 <v-slide-group show-arrows>
                     <GenericItemCard v-for="entry in row.entries" :key="entry.title" :entry="entry" :row="row" @custom-click="entryClicked" />
@@ -143,6 +135,9 @@ export default {
         },
         linkClicked(url){
             window.open(url, '_blank').focus();
+        },
+        scrollToRow(row){
+            document.getElementById(row.title).scrollIntoView()
         },
 
     },

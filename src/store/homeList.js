@@ -62,6 +62,7 @@ export const useHomeListStore = defineStore('homeList', {
             //////////////////// Previous Positions & Projects
             {
                 title: 'Previous Positions & Projects',
+                titleBtn: 'Previous Work',
                 cardWidths: '215',
                 cardHeights: '200',
                 entries: [
@@ -197,14 +198,14 @@ export const useHomeListStore = defineStore('homeList', {
                         link: "https://alacrityfoundation.co.uk/",
                         content: [
                             "Technical lead",
-                            "Incubator that helped post-grads make thier way to entrepreneurship",
+                            "Incubator that helped post-grads make their way to entrepreneurship",
                             "Worked with co-founders to start 2 companies",
                             "Runner up for rising star in the welsh start up awards",
                             "Presented ideas to the foundation and to teams",
                             "Helped other teams with issues",
                             "Helped other 'students' during the bootcamp",
-                            "1st company, Finative, did not recieve seed investment because I was the only founder left",
-                            "2nd company, RECOVAR, declined seed funding becuase we felt that our issue was that our first customer, whom helped us develop the product had no intentios of buying it",
+                            "1st company, Finative, did not receive seed investment because I was the only founder left",
+                            "2nd company, RECOVAR, declined seed funding because we felt that our issue was that our first customer, whom helped us develop the product had no intentions of buying it",
                             "Technical lead for both Finative and RECOVAR",
                         ],
                     },
@@ -260,7 +261,7 @@ export const useHomeListStore = defineStore('homeList', {
                         content: [],
                     },
                     {
-                        textColor: "#0FF",
+                        textColor: "#F0F",
                         image: "src/assets/images/hobbies/motorbike.jpg",
                         title: "Motorbiking",
                         content: [],
