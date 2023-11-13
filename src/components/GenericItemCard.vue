@@ -13,6 +13,7 @@
 export default {
     name: 'GenericItemCard',
     props: ['entry', 'row'],
+    emits: ['custom-click'],
     data() {
         return {
 

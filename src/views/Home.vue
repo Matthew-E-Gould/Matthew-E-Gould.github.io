@@ -1,34 +1,6 @@
 <template>
     <v-app id="inspire">
 
-        <!-- Top bar -->
-        <v-app-bar>
-            <v-avatar class="ms-2" color="surface-variant" size="32" variant="flat"></v-avatar>
-
-            <v-app-bar-title>
-                Matthew Gould
-            </v-app-bar-title>
-
-            <v-spacer></v-spacer>
-        </v-app-bar>
-
-        <!-- Bottom bar -->
-        <v-footer app color="grey" height="44">
-
-        </v-footer>
-
-        <!-- Left Bar -->
-        <v-navigation-drawer floating>
-            <v-list>
-
-                <v-list-item v-for="(row, index) in rows" :key="index">
-                    <v-btn variant="text" block @click="scrollToRow(row)">{{ row.titleBtn ? row.titleBtn : row.title
-                    }}</v-btn>
-                </v-list-item>
-
-            </v-list>
-        </v-navigation-drawer>
-
         <!-- Main content -->
         <v-main>
 
@@ -97,6 +69,7 @@ import { useHomeListStore, } from '@/store/homeList.js'
 export default {
     name: 'Home',
     props: {},
+    emits: [],
     data() {
         return {
             currentDialog: null,
