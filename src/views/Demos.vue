@@ -21,41 +21,52 @@ export default {
                 {
                     title: 'Bot Game',
                     subtitle: 'Demo for an Alacrity guest to spur ideas',
-                    href: '',
+                    href: 'vue2archive/BotGame.html',
+                    isArchive: true,
                 },
                 {
-                    title: 'Primes',
-                    subtitle: 'Something that I threw together to find prime numbers',
-                    href: '',
+                    title: 'Primes Demo',
+                    subtitle: 'Something that I threw together to find prime numbers or common factors of normal numbers',
+                    href: 'vue2archive/PrimesDemo.html',
+                    isArchive: true,
                 },
                 {
                     title: 'Maze Generator',
                     subtitle: 'Generate a little Maze',
-                    href: '',
+                    href: 'vue2archive/MazeGenerator.html',
+                    isArchive: true,
                 },
                 {
                     title: 'Level-up-a-day calculator',
                     subtitle: 'A useful little tracker that lets you work out how many levels you need to get in a game to get to a certain level by a certain date.',
-                    href: '',
+                    href: 'vue2archive/LevelUpTracker.html',
+                    isArchive: true,
                 },
                 {
                     title: 'JSON to Table',
                     subtitle: 'Convert JSON to a more readable format',
-                    href: '',
+                    href: 'vue2archive/JsonToTable.html',
+                    isArchive: true,
                 },
                 {
                     title: 'Name Generator',
                     subtitle: 'Generate names from words you like the sound of',
-                    href: '',
+                    href: 'vue2archive/NameGenerator.html',
+                    isArchive: true,
                 },
             ]
         };
     },
     mounted() {
+        console.log(__dirname)
     },
     methods: {
         demoClicked(demo) {
-            this.$router.push(demo.href);
+            if(demo.isArchive){
+                window.location.href = `${window.location.origin}/${demo.href}`
+            } else {
+                this.$router.push(demo.href);
+            }
         },
     },
     computed: {

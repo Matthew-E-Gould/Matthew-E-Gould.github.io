@@ -51,7 +51,7 @@
     <p class="mb-1">Picking up and dropping will not work if the bot isn't on the smaller brown box.</p>
 
 
-    <a class="btn btn-block btn-outline-dark" href="..">
+    <a class="btn btn-block btn-outline-dark" id="backButton">
         <i class="fas fa-arrow-left mr-2"></i>
         Back to Demos
     </a>
@@ -103,6 +103,11 @@
 </body>
 
 <script>
+
+document.getElementById("backButton").addEventListener("click", () => {
+    window.location.href = `${window.location.origin}/demos`
+});
+
 function Game(){
     const T_LEFT = 0;
     const T_RIGHT = 1;

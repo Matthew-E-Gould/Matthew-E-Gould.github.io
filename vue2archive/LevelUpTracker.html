@@ -20,7 +20,7 @@
 
         <br>
 
-        <a class="btn btn-block btn-outline-dark" href="..">
+        <a class="btn btn-block btn-outline-dark" id="backButton">
             <i class="fas fa-arrow-left mr-2"></i>
             Back to Demos
         </a>
@@ -114,6 +114,11 @@
 <script src="../../js/moment.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 <script>
+
+    document.getElementById("backButton").addEventListener("click", () => { // no back button on this page kek
+        window.location.href = `${window.location.origin}/demos`
+    });
+
     var levelupCalc = new Vue({
         el: ".vueApp",
         components: {

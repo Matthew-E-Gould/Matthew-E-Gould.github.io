@@ -20,6 +20,12 @@
 
 <body class="container my-3">
     <div id="app">
+
+        <a class="btn btn-block btn-outline-dark" id="backButton">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Demos
+        </a>
+
         <v-app id="inspire">
 
             <div v-if="showStart">
@@ -27,9 +33,9 @@
                 <v-btn @click="run" :disabled="stringedItems.length == 0">Convert JSON to Table</v-btn>
             </div>
             <div v-else>
-                <v-btn @click="reset">Go Back</v-btn>
+                <v-btn @click="reset">Reset</v-btn>
                 <v-data-table :headers="headings" :items="items"></v-data-table>
-                <v-btn @click="reset">Go Back</v-btn>
+                <v-btn @click="reset">Reset</v-btn>
             </div>
 
         </v-app>
@@ -39,6 +45,11 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
 <script>
+
+    document.getElementById("backButton").addEventListener("click", () => { // no back button on this page kek
+        window.location.href = `${window.location.origin}/demos`
+    });
+
     app = new Vue({
         el: '#app',
         vuetify: new Vuetify(),

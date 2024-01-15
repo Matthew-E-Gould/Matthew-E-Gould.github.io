@@ -18,6 +18,8 @@
 
             </v-sheet>
 
+            <WorkTimeline class="my-4"/>
+
         </v-main>
 
         <!-- Popup -->
@@ -64,6 +66,7 @@
   
 <script>
 import GenericItemCard from '@/components/GenericItemCard.vue';
+import WorkTimeline from '@/components/WorkTimeline.vue';
 import { useHomeListStore, } from '@/store/homeList.js'
 
 export default {
@@ -128,7 +131,7 @@ export default {
     watch: {
         template(newVal, oldVal) { },
     },
-    components: { GenericItemCard }
+    components: { GenericItemCard, WorkTimeline }
 }
 
 </script>

@@ -27,7 +27,7 @@
 
         <br>
 
-        <a class="btn btn-block btn-outline-dark" href="..">
+        <a class="btn btn-block btn-outline-dark" id="backButton">
             <i class="fas fa-arrow-left mr-2"></i>
             Back to Demos
         </a>
@@ -142,7 +142,12 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
 <script>
-    // https://github.com/jorgechavz/elo-js/blob/master/src/elo.js
+
+    document.getElementById("backButton").addEventListener("click", () => { // no back button on this page kek
+        window.location.href = `${window.location.origin}/demos`
+    });
+
+    // https://github.com/jorgechavz/elo-js/blob/master/src/elo.js << todo: look into an elo system for a new feature
 
     app = new Vue({
         el: "#vueApp",
