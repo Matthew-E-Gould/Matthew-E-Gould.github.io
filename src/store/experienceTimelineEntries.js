@@ -74,13 +74,7 @@ export const useExperienceTimelineEntriesStore = defineStore('experienceTimeline
             {
                 color: 'green',
                 year: '2023',
-                title: 'Began working as a senior developer at Haelu',
-                description: '',
-            },
-            {
-                color: 'red',
-                year: '',
-                title: 'Haelu Closes',
+                title: 'Worked as a senior developer at Haelu',
                 description: '',
             },
             {
