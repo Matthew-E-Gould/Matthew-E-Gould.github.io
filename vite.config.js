@@ -1,3 +1,6 @@
+// this is causing the issue dogshit ass js here is fix methinks https://cli.vuejs.org/guide/deployment.html#github-pages
+
+
 // Plugins
 import vue from '@vitejs/plugin-vue'
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'

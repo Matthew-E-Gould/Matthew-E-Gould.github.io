@@ -17,7 +17,7 @@
         <br>
         <p>Just a small demo on optimising methods on finding primes.</p>
 
-        <a class="btn btn-block btn-outline-dark" href="..">
+        <a class="btn btn-block btn-outline-dark" id="backButton">
             <i class="fas fa-arrow-left mr-2"></i>
             Back to Demos
         </a>
@@ -66,6 +66,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 <script>
+
+    document.getElementById("backButton").addEventListener("click", () => { // no back button on this page kek
+        window.location.href = `${window.location.origin}/demos`
+    });
 
 var primes = new Vue({
     el: ".vueApp",
