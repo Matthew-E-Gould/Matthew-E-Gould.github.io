@@ -1,25 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link rel="modulepreload" href="/_app/immutable/entry/start.DY4LywPJ.js">
+		<link rel="modulepreload" href="/_app/immutable/chunks/B7QHcnUq.js">
+		<link rel="modulepreload" href="/_app/immutable/chunks/816QidEJ.js">
+		<link rel="modulepreload" href="/_app/immutable/chunks/BDrDb5EU.js">
+		<link rel="modulepreload" href="/_app/immutable/entry/app.PaL4iAhP.js">
+		<link rel="modulepreload" href="/_app/immutable/chunks/NZTpNUN0.js">
+		<link rel="modulepreload" href="/_app/immutable/chunks/B0_DSgn9.js">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+			<script>
+				{
+					__sveltekit_w7k6z9 = {
+						base: ""
+					};
 
-<head>
-  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="anonymous">
-  <link rel="preload" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap">
-  <link rel="preload" as="font" type="font/eot" href="/assets/materialdesignicons-webfont-861aea05.eot" crossorigin="anonymous">
-  <link rel="preload" as="font" type="font/woff2" href="/assets/materialdesignicons-webfont-e52d60f6.woff2" crossorigin="anonymous">
-  <link rel="preload" as="font" type="font/woff" href="/assets/materialdesignicons-webfont-48d3eec6.woff" crossorigin="anonymous">
-  <link rel="preload" as="font" type="font/ttf" href="/assets/materialdesignicons-webfont-bd725a7a.ttf" crossorigin="anonymous">
+					const element = document.currentScript.parentElement;
 
-  <meta charset="UTF-8" />
-  <link rel="icon" href="/favicon.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Matthew Gould CV Site</title>
-  <script type="module" crossorigin src="/assets/index-36404137.js"></script>
-  <link rel="stylesheet" href="/assets/index-d96bc614.css">
-</head>
-
-<body>
-  <div id="app"></div>
-  
-</body>
-
+					Promise.all([
+						import("/_app/immutable/entry/start.DY4LywPJ.js"),
+						import("/_app/immutable/entry/app.PaL4iAhP.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element);
+					});
+				}
+			</script>
+		</div>
+	</body>
 </html>
